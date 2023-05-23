@@ -1,0 +1,76 @@
+version: "3.7"
+networks:
+  event-network:
+  frontend:
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - 8000:80 # To change host access port number
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./backend:/var/www/html # To change project folder name
+    depends_on:
+      - php-fpm
+    networks:
+      - event-network
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 3000:3000
+    environment:
+      - NODE_ENV=development
+    networks:
+      - frontend
+
+  php-fpm:
+    build:
+      context: ./php-fpm
+      target: dev
+    volumes:
+      - ./php-fpm/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+      - ./backend:/var/www/html # To change project folder name
+    depends_on:
+      - mysql
+    networks:
+      - event-network
+
+  mysql:
+    image: mysql:latest
+    ports:
+      - 3306:3306 # To change mysql port number
+    environment:
+      MYSQL_ROOT_PASSWORD: rootPass
+      MYSQL_USER: user # To change database user
+      MYSQL_PASSWORD: password # To change database user password
+      MYSQL_DATABASE: event_db # To change database name
+    volumes:
+      - ./mysql/custom.cnf:/etc/mysql/conf.d/custom.cnf
+      - db-data:/var/lib/mysql
+    networks:
+      - event-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: dev_pma
+    links:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: always
+    ports:
+      - 8183:80
+    networks:
+      - event-network
+
+volumes:
+  db-data:

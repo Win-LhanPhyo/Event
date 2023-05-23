@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="./profile.css">
+  <script src="../js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css">
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $.get('http://localhost:8000/api/user/detail/1', function (data, textStatus, jqXHR) {
+        $('.name').append(data.name);
+        data.profile ? $('.profile').attr('src', data.profile) : $(".profile").attr('src', 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp');
+        $('.email').append(data.email);
+        $('.role').append(data.role);
+        $('.ph').append(data.phone);
+        $('.dob').append(data.dob);
+        $('.address').append(data.address);
+      });
+    });
+  </script>
+  <title>Profile</title>
+</head>
+
+<body>
+  <div class="d-flex flex-sm-row flex-column">
+    <div class="col left">
+      <img src="../img/line_img3.jpg" class="slide-imgs">
+    </div>
+    <div class="col right p-5">
+      <div class="card" style="border-radius: 15px;">
+        <div class="card-body text-center">
+          <div class="mt-3 mb-4">
+            <img src="#" class="profile rounded-circle img-fluid" style="width: 100px;" />
+          </div>
+          <h4 class="name mb-2"></h4>
+          <div class="text-start mb-4" style="width: 239px; margin: 0 auto;">
+            <b class="me-2">Role :</b><span class="role"></span><br>
+            <b class="me-2">Email :</b><span class="email"></span><br>
+            <b class="me-2">Phone Number :</b><span class="ph"> </span><br>
+            <b class="me-2">Date :</b><span class="dob"></span><br>
+            <b class="me-2">Address :</b><span class="address"></span><br>
+          </div>
+          <div class="btn-div text-center">
+            <Button type="submit" class="btn submit-btn col-md-4">
+              Edit
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+</body>
+
+</html>

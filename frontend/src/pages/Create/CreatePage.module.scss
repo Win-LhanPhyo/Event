@@ -1,0 +1,79 @@
+.breadcrumb {
+  margin: 20px 0;
+  font-size: 16px;
+  li a {
+    color: #07b53b;
+  }
+}
+.active {
+  font-weight: 500;
+  color: #3C4048 !important;
+}
+.wrapper {
+  padding-bottom: 100px !important;
+}
+.profileImg {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+}
+.container {
+  width: 50% !important;
+  min-width: 450px;
+  background-color: #fff;
+  padding: 50px !important;
+  border-radius: 20px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 20px 0px;
+}
+.inputGroup {
+  border: 1px solid #07b53b;
+  border-radius: 10px;
+  padding-right: 20px;
+}
+.backdrop {
+  pointer-events: none;
+}
+.registerTtl {
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  color: #07b53b !important;
+  text-align: center;
+  margin-bottom: 30px;
+}
+.formControl {
+  color: #06c755 !important;
+  font-size: 18px !important;
+}
+.formLabel {
+  font-size: 18px !important;
+  color: #6c757d;
+}
+.resetBtn, .registerBtn {
+  width: 12rem;
+  font-weight: bold !important;
+  background-color: unset !important;
+  border-radius: 30px !important;
+}
+.resetBtn {
+  color: #EB455F !important;
+  border: 2px solid #EB455F !important;
+}
+.resetBtn:hover, .registerBtn:hover {
+  transform: translateY(-0.4rem);
+  transition: 0.3s ease-in-out;
+  color: #fff  !important;
+}
+.resetBtn:hover {
+  box-shadow: 0 0.5em 0.5em -0.4em #EB455F;
+  background-color: #EB455F !important;
+}
+.registerBtn {
+  color: #00b900 !important;
+  border: 2px solid #00b900 !important;
+}
+.registerBtn:hover {
+  box-shadow: 0 0.5em 0.5em -0.4em #06c755;
+  background-color: #00b900 !important;
+}
+.navBar {
+  position: fixed !important;
+}

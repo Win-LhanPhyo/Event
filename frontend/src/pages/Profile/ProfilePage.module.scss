@@ -1,0 +1,42 @@
+.breadcrumb {
+    margin-top: 20px;
+    font-size: 16px;
+    li a {
+        color: #07b53b;
+    }
+}
+.active {
+    font-weight: 500;
+    color: #3C4048 !important;
+}
+.wrapper {
+    padding-bottom: 100px !important;
+}
+.container {
+    width: 50% !important;
+    min-width: 450px;
+    background-color: #fff;
+    padding: 40px !important;
+    border-radius: 20px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 20px 0px;
+}
+.profileImg {
+    width: 150px;
+    height: 150px;
+    padding-bottom: 15px;
+}
+.updateBtn {
+    width: 12rem;
+    color: #07b53b !important;
+    font-weight: bold !important;
+    border: 2px solid #07b53b !important;
+    background-color: unset !important;
+    border-radius: 10px !important;
+}
+.updateBtn:hover {
+    box-shadow: 0 0.5em 0.5em -0.4em #07b53b;
+    transform: translateY(-0.4rem);
+    transition: 0.3s ease-in-out;
+    background-color: #07b53b !important;
+    color: #fff  !important;
+}

@@ -88,8 +88,8 @@ const RegistrationForm: React.FC = () => {
         setPreviewImage(reader.result);
       };
       reader.readAsDataURL(file);
-      const { name,value } = event.target;
       setSelectedFile(file);
+      const { name,value } = event.target;
       setFormData({...formData, [name]:value });
     } else {
       setSelectedFile(null);
@@ -279,7 +279,6 @@ const RegistrationForm: React.FC = () => {
             <input
               type="file"
               name="profile"
-              value={formData.profile}
               onChange={handleFileChange}
             />
           </div>

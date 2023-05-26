@@ -14,6 +14,7 @@ import Box from '@mui/material/Box';
 import { ThemeProvider } from "@mui/material";
 import { eventTheme } from '../../entries/theme';
 import Pagination from '@mui/material/Pagination';
+import HeaderPage from '../Header/HeaderPage';
 
 function createData(
     name: string,
@@ -41,49 +42,51 @@ const EventPage:React.FC<{
 }> = () => {
     const [events, setEventState] = useRecoilState(eventState);
 
-    console.log("event list", events);
-
     return (
-        <ThemeProvider theme={eventTheme}>
-            <Box sx={{
-                width: '100%',
-                backgroundColor: 'success.light'
-            }}>
-                <Box sx={{ px: 5, py: 5 }}>
-                    <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                            <TableHead>
-                                <StyledTableRow>
-                                    <TableCell>ID</TableCell>
-                                    <TableCell align="center">Event Name</TableCell>
-                                    <TableCell align="center">Description</TableCell>
-                                    <TableCell align="center">From ~ To</TableCell>
-                                </StyledTableRow>
-                            </TableHead>
-                            <TableBody>
-                            {events?.data.map((row: Event) => (
-                                <TableRow key={row.id}>
-                                    <TableCell component="th" scope="row">
-                                        {row.id}
-                                    </TableCell>
-                                    <TableCell align="center">{row.event_name}</TableCell>
-                                    <TableCell align="center">{row.description}</TableCell>
-                                    <TableCell align="center">{row.from_date.toString()}</TableCell>
-                                </TableRow>
-                            ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    <Box sx={{ 
-                        pt: 3,
-                        display: "flex",
-                        justifyContent: "center"
-                     }}>
-                        <Pagination count={10} shape="rounded" />
+        <div>
+            <HeaderPage />
+            <ThemeProvider theme={eventTheme}>
+                <Box sx={{
+                    width: '100%',
+                    backgroundColor: 'success.light'
+                }}>
+                    <Box sx={{ px: 5, py: 5 }}>
+                        <TableContainer component={Paper}>
+                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                <TableHead>
+                                    <StyledTableRow>
+                                        <TableCell>ID</TableCell>
+                                        <TableCell align="center">Event Name</TableCell>
+                                        <TableCell align="center">Description</TableCell>
+                                        <TableCell align="center">From ~ To</TableCell>
+                                    </StyledTableRow>
+                                </TableHead>
+                                <TableBody>
+                                {events?.data.map((row: Event) => (
+                                    <TableRow key={row.id}>
+                                        <TableCell component="th" scope="row">
+                                            {row.id}
+                                        </TableCell>
+                                        <TableCell align="center">{row.event_name}</TableCell>
+                                        <TableCell align="center">{row.description}</TableCell>
+                                        <TableCell align="center">{row.from_date.toString()}</TableCell>
+                                    </TableRow>
+                                ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                        <Box sx={{ 
+                            pt: 3,
+                            display: "flex",
+                            justifyContent: "center"
+                        }}>
+                            <Pagination count={10} shape="rounded" />
+                        </Box>
                     </Box>
                 </Box>
-            </Box>
-        </ThemeProvider>
+            </ThemeProvider>
+        </div>
+        
     );
 };
 

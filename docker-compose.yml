@@ -1,7 +1,7 @@
 version: "3.7"
 networks:
   event-network:
-  frontend:
+  typescript:
 services:
   nginx:
     image: nginx:latest
@@ -15,20 +15,35 @@ services:
     networks:
       - event-network
 
-  frontend:
-    container_name: frontend
+  # frontend:
+  #   container_name: frontend
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./frontend:/usr/src/app
+  #     - /usr/src/app/node_modules
+  #   ports:
+  #     - 3001:3000
+  #   environment:
+  #     - NODE_ENV=development
+  #   networks:
+  #     - frontend
+  
+  typescript:
+    container_name: typescript
     build:
-      context: ./frontend
+      context: ./event-typescript
       dockerfile: Dockerfile
     volumes:
-      - ./frontend:/usr/src/app
-      - /usr/src/app/node_modules
+      - ./event-typescript/src:/app/src
+      # - /usr/src/app/node_modules
     ports:
       - 3000:3000
     environment:
-      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
     networks:
-      - frontend
+      - typescript
 
   php-fpm:
     build:
@@ -45,7 +60,7 @@ services:
   mysql:
     image: mysql:latest
     ports:
-      - 3306:3306 # To change mysql port number
+      - 3307:3306 # To change mysql port number
     environment:
       MYSQL_ROOT_PASSWORD: rootPass
       MYSQL_USER: user # To change database user
@@ -64,7 +79,7 @@ services:
       - mysql
     environment:
       PMA_HOST: mysql
-      PMA_PORT: 3306
+      PMA_PORT: 3307
       PMA_ARBITRARY: 1
     restart: always
     ports:

@@ -49,7 +49,7 @@ const RegistrationForm: React.FC = () => {
     // Assuming newErrors is an object to store the error messages
     const newErrors: { [key: string]: string } = {}; 
     const  requiredFields:string[] = [formData.name, formData.password, formData.confirmPassword, formData.phone, formData.profile, formData.role, formData.address, formData.dob];
-    const errorMessages: string[] = ['name', 'password', 'confirm Password', 'phone', 'profile', 'role', 'address', 'dob']; 
+    const errorMessages: string[] = ['name', 'password', 'confirmPassword', 'phone', 'profile', 'role', 'address', 'dob']; 
     for(let i=0; i<requiredFields.length; i++){
       if(requiredFields[i] === ''){
         for(let j=0; j<errorMessages.length; j++){

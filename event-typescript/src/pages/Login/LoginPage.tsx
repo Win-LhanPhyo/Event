@@ -141,7 +141,7 @@ let LoginPage: React.FC = () => {
         </div>
         <div style={{display: "flex", justifyContent: "center", marginTop: "15px", marginBottom: "30px", fontSize: "13px"}}>
           <span>Don't Have Account?</span>
-          <a href="/admin/registerForm">
+          <a href="/admin/register">
             Register
           </a>
         </div>

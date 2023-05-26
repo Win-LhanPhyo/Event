@@ -14,7 +14,7 @@ import Box from '@mui/material/Box';
 import { ThemeProvider } from "@mui/material";
 import { eventTheme } from '../../entries/theme';
 import Pagination from '@mui/material/Pagination';
-import HeaderPage from '../Header/HeaderPage';
+import HeaderPage from '../../components/Header/HeaderPage';
 
 function createData(
     name: string,

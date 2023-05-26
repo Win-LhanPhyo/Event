@@ -13,7 +13,6 @@ import { eventTheme } from "../../entries/theme";
 import Pagination from "@mui/material/Pagination";
 import Box from "@mui/material/Box";
 import { User } from "../../redux/domain/userList";
-import "../../App.css";
 import styled from "@emotion/styled";
 import { IconButton, Menu, MenuItem, Modal } from "@mui/material";
 import { MoreVertTwoTone } from "@mui/icons-material";

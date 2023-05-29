@@ -100,6 +100,7 @@ const RegistrationForm: React.FC = () => {
    * handle clear event for input fields
    */
   const handleClear = () => {
+    setPreviewImage(null);
     setFormData(initialFormData);
   };
 

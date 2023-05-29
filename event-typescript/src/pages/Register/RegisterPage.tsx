@@ -32,7 +32,6 @@ const RegistrationForm: React.FC = () => {
     confirmPassword: '',
     phone: '',
     profile: '',
-    role: '',
     address: '',
     dob: ''
   });
@@ -48,8 +47,8 @@ const RegistrationForm: React.FC = () => {
   const validateForm = () => {
     // Assuming newErrors is an object to store the error messages
     const newErrors: { [key: string]: string } = {}; 
-    const  requiredFields:string[] = [formData.name, formData.password, formData.confirmPassword, formData.phone, formData.profile, formData.role, formData.address, formData.dob];
-    const errorMessages: string[] = ['name', 'password', 'confirmPassword', 'phone', 'profile', 'role', 'address', 'dob']; 
+    const  requiredFields:string[] = [formData.name, formData.password, formData.confirmPassword, formData.phone, formData.profile, formData.address, formData.dob];
+    const errorMessages: string[] = ['name', 'password', 'confirmPassword', 'phone', 'profile', 'address', 'dob']; 
     for(let i=0; i<requiredFields.length; i++){
       if(requiredFields[i] === ''){
         for(let j=0; j<errorMessages.length; j++){
@@ -121,7 +120,7 @@ const RegistrationForm: React.FC = () => {
       apiFormData.append("name", formData.name);
       apiFormData.append("email", formData.email);
       apiFormData.append("password", formData.password);
-      apiFormData.append("role", formData.role);
+      apiFormData.append("role", '1');
       apiFormData.append("dob", formData.dob);
       apiFormData.append("phone", formData.phone);
       apiFormData.append("address", formData.address);
@@ -217,7 +216,7 @@ const RegistrationForm: React.FC = () => {
             onChange={handleChange}
           />
           {errors.name && <span style={styles.errorMessage}>{errors.name}</span>}
-          <div style={styles.inputStyle}>
+          {/* <div style={styles.inputStyle}>
             <label>
               <input
                 type="radio"
@@ -239,7 +238,7 @@ const RegistrationForm: React.FC = () => {
               User
             </label>
           </div>
-          {errors.role && <span style={styles.errorMessage}>{errors.role}</span>}
+          {errors.role && <span style={styles.errorMessage}>{errors.role}</span>} */}
           <input
             style={styles.inputStyle} 
             placeholder="Enter your email" 
@@ -279,6 +278,7 @@ const RegistrationForm: React.FC = () => {
             <input
               type="file"
               name="profile"
+              value={formData.profile}
               onChange={handleFileChange}
             />
           </div>

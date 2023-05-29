@@ -93,6 +93,8 @@ const RegistrationForm: React.FC = () => {
     } else {
       setSelectedFile(null);
       setPreviewImage(null);
+      const { name,value } = event.target;
+      setFormData({...formData, [name]:value });
     }
   }
 

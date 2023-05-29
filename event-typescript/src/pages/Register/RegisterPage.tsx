@@ -123,7 +123,7 @@ const RegistrationForm: React.FC = () => {
       apiFormData.append("name", formData.name);
       apiFormData.append("email", formData.email);
       apiFormData.append("password", formData.password);
-      apiFormData.append("role", '1');
+      apiFormData.append("role", '0');
       apiFormData.append("dob", formData.dob);
       apiFormData.append("phone", formData.phone);
       apiFormData.append("address", formData.address);

@@ -55,7 +55,12 @@ let LoginPage: React.FC = () => {
           window.location.href = '/admin/events';
         }
       }).catch((error) => {
-        console.log(error);
+        if(error.response.status === 401) {
+          const newErrors: {[key: string]: string} = {};
+          newErrors.email = 'Email or password is not valid.';
+          newErrors.password = 'Email or password is not valid.';
+          setErrors(newErrors);
+        }
       });
     } else {
       console.log(errors);

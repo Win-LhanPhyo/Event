@@ -2,6 +2,7 @@ import * as React from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
+import Button from '@mui/material/Button';
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
@@ -16,6 +17,8 @@ import { User } from "../../redux/domain/userList";
 import styled from "@emotion/styled";
 import { IconButton, Menu, MenuItem, Modal } from "@mui/material";
 import { MoreVertTwoTone } from "@mui/icons-material";
+import ModalBox from '../ModalBox/ModalBox';
+import CreatePage from '../User/CreatePage';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
@@ -28,6 +31,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     color: eventTheme.palette.text.secondary,
   },
 }));
+
+
+
+/* End Modal Box */
 
 const UserPage: React.FC<{
   children?: React.ReactNode;
@@ -43,6 +50,24 @@ const UserPage: React.FC<{
   const handleMenuItemClick = () => {
     handleClose();
   };
+
+  /* Start Modal Box */
+const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+const handleCreateClick = () => {
+    setIsModalOpen(true);
+};
+
+const handleCloseModal = () => {
+    setIsModalOpen(false);
+};
+
+const styles ={
+  modalScroll: {
+    overflow: 'scroll',
+    height: '500px',
+  }
+}
   return (
     <ThemeProvider theme={eventTheme}>
       <Box
@@ -50,10 +75,14 @@ const UserPage: React.FC<{
           width: "100%",
           backgroundColor: "success.light",
           position: "absolute",
-          // zIndex: "1"
         }}
       >
         <Box sx={{ px: 5, py: 5 }}>
+          <Box sx={{pb: 3, textAlign: 'end'}}>
+            <div>
+              <Button sx={{color: 'primary', border: '1px solid blue'}} onClick={handleCreateClick}>Create</Button>
+          </div>
+          </Box>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
@@ -141,6 +170,15 @@ const UserPage: React.FC<{
           </Box>
         </Box>
       </Box>
+      <div style={styles.modalScroll}>
+        <ModalBox
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          aria-labelledby="modal-modal-title"
+        >
+          <CreatePage />
+        </ModalBox>
+      </div>
     </ThemeProvider>
   );
 };

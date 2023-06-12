@@ -61,53 +61,65 @@ const UserPage: React.FC<{
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedData, setSelectedData] = useState<User | null>(null);
+
+  /**
+   * icon button click show edit modal small box
+   * @param event
+   */
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
+  /**
+   * close the modal box for icon click
+   */
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  /**
+   * edit modal box's close icon button event
+   */
   const handleUpdateSelectedData = (action: any) => {
     if (action.type === 'UPDATE_SELECTED_DATA') {
       setSelectedData(action.data);
     }
   };
+
+  /**
+   * show edit modl box when edit button clicked
+   */
   const handleMenuItemClick = (data: User) => {
     handleClose();
     setShowEditModal(true);
     setSelectedData(data);
   };
+
+  /**
+   * close edit modl box when close button clicked
+   */
   const handleModalClose = () => {
     setShowEditModal(false);
     setUserState(users);
   };
 
-  const [sortedData, setSortedData] = React.useState<User[]>(users.data); // 1,2,3,4,5,6,7,8,9,10...
-  const [sortOrder, setSortOrder] = React.useState<"asc" | "desc">("asc");
-
-  const handleSerailNo = (event: React.MouseEvent<HTMLElement>) => {
-    const sorted = sortedData.slice().sort((a, b) => {
-      if(sortOrder === "asc") {
-        return b.id - a.id; // sort descending
-      } else {
-        return a.id - b.id; // sort ascending
-      }
-    });
-
-    setSortedData(sorted);
-    setSortOrder(sortOrder === "asc"? "desc" : "asc");
-  };
-
   /* Start Modal Box */
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
+  /**
+   * show create user modal when create button is clicked
+   */
   const handleCreateClick = () => {
       setIsModalOpen(true);
   };
 
+  /**
+   * close create user modal 
+   */
   const handleCloseModal = () => {
       setIsModalOpen(false);
   };
+
   // To Export the data of user
   const data = users.data;
 
@@ -130,7 +142,6 @@ const UserPage: React.FC<{
             <div>
               <ImportButton />
               <ExportButton data={data} filename="exported_data"/>
-              {/* <Button sx={{color: 'primary', border: '1px solid blue',  marginRight: '20px'}} onClick={handleDownload}>Download CSV</Button> */}
               <Button sx={{color: 'primary', border: '1px solid blue'}} onClick={handleCreateClick}>Create</Button>
           </div>
           </Box>
@@ -138,10 +149,7 @@ const UserPage: React.FC<{
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <StyledTableRow>
-                  <TableCell sx={{ align: 'center', display: 'flex' }}>ID
-                    <IconButton onClick={handleSerailNo} sx={{px: 0, py: 0, color: '#D6D6D6'}}>
-                    </IconButton>
-                  </TableCell>
+                  <TableCell sx={{ align: 'center', display: 'flex' }}>ID</TableCell>
                   <TableCell align="center">Profile</TableCell>
                   <TableCell align="center">Name</TableCell>
                   <TableCell align="center">Email</TableCell>
@@ -245,4 +253,5 @@ const UserPage: React.FC<{
     </ThemeProvider>
   );
 };
+
 export default UserPage;

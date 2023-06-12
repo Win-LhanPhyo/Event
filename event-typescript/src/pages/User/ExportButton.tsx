@@ -1,9 +1,7 @@
 import React from 'react';
 import Button from '@mui/material/Button';
-// import { writeFile, utils } from 'xlsx';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-// import { saveAs } from 'file-saver';
 
 interface ExportButtonProps {
   data: any[]; // The data you want to export
@@ -11,12 +9,19 @@ interface ExportButtonProps {
 }
 
 const ExportButton: React.FC<ExportButtonProps> = ({ data, filename }) => {
+
+    /**
+     * export csv file from export csv button
+     */
     const exportToCSV = () => {
       const csvData = convertToCSV(data);
       const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8' });
       saveAs(blob, `${filename}.csv`);
     };
   
+    /**
+     * export excel file from export excel button
+     */
     const exportToExcel = () => {
       const worksheet = XLSX.utils.json_to_sheet(data);
       const workbook = XLSX.utils.book_new();
@@ -25,7 +30,11 @@ const ExportButton: React.FC<ExportButtonProps> = ({ data, filename }) => {
       const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       saveAs(blob, `${filename}.xlsx`);
     };
-  
+    
+    /**
+     * convert file array to csv format
+     * @param dataArray 
+     */
     const convertToCSV = (dataArray: any[]) => {
       const header = Object.keys(dataArray[0]).join(',');
       const rows = dataArray.map(item => Object.values(item).join(','));
@@ -34,8 +43,16 @@ const ExportButton: React.FC<ExportButtonProps> = ({ data, filename }) => {
   
     return (
       <span>
-        <Button sx={{color: 'primary', border: '1px solid blue',  marginRight: '20px'}} onClick={exportToCSV}>Download CSV</Button>
-        <Button sx={{color: 'primary', border: '1px solid blue',  marginRight: '20px'}} onClick={exportToExcel}>Download Excel</Button>
+        <Button 
+          sx={{color: 'primary', border: '1px solid blue',  marginRight: '20px'}} 
+          onClick={exportToCSV}>
+            Download CSV
+        </Button>
+        <Button 
+          sx={{color: 'primary', border: '1px solid blue',  marginRight: '20px'}} 
+          onClick={exportToExcel}>
+            Download Excel
+        </Button>
       </span>
     );
 };

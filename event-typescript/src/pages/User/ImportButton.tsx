@@ -6,17 +6,25 @@ interface CSVRow {
   [key: string]: string;
 }
 
-function ImportButton(): JSX.Element {
+const ImportButton: React.FC = () => {
   const [file, setFile] = useState<File | undefined>();
 
   const fileReader = new FileReader();
 
+  /**
+   * file is selected change the file name
+   * @param e 
+   */
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
     }
   };
 
+  /**
+   * to upload csv file to the server
+   * @param string 
+   */
   const csvFileToArray = (string: string): void => {
     const csvHeader = string.slice(0, string.indexOf("\n")).split(",");
     const csvRows = string.slice(string.indexOf("\n") + 1).split("\n");
@@ -50,6 +58,10 @@ function ImportButton(): JSX.Element {
     })
   };
 
+  /**
+   * button clicked upload csv file 
+   * @param e 
+   */
   const handleOnSubmit = (e: FormEvent): void => {
     e.preventDefault();
 

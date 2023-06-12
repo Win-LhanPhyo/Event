@@ -1,10 +1,9 @@
 import { Box, NativeSelect, Select } from "@mui/material";
-import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import DateOfBirth from "./DateOfBirth";
 import { useState, ChangeEvent, FormEvent } from "react";
 import { Button } from "@mui/material";
-import { User, Users } from "../../redux/domain/userList";
+import { User } from "../../redux/domain/userList";
 import axios from "axios";
 
 type ModalContentProps = {
@@ -12,7 +11,6 @@ type ModalContentProps = {
   selectedData: User | null;
   onUpdateSelectedData: (data: any) => void;
 };
-
 
 const role = [
   {
@@ -32,6 +30,11 @@ const role = [
 const UserEdit : React.FC<ModalContentProps> = ({ selectedData, onUpdateSelectedData }) => {
   const [formData , setFormData] =useState(selectedData);
 
+  /**
+   * input field value changes
+   * @param selectedData
+   * @param onUpdateSelectedData
+   */
   const inputChangeForUser = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData((prevFormData: any) => ({
@@ -40,6 +43,10 @@ const UserEdit : React.FC<ModalContentProps> = ({ selectedData, onUpdateSelected
     }));
   };
 
+  /**
+   * User Update form
+   * @param e
+   */
   const editFormSubmit = (e: FormEvent) => {
     e.preventDefault();
     
@@ -53,8 +60,6 @@ const UserEdit : React.FC<ModalContentProps> = ({ selectedData, onUpdateSelected
       });
       onUpdateSelectedData({ type: 'UPDATE_SELECTED_DATA', data: formData });
     }
-
-
   };
   return (
     <Box

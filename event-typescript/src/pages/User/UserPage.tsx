@@ -114,7 +114,6 @@ const UserPage: React.FC<{
   const styles ={
     modalScroll: {
       overflow: 'scroll',
-      height: '500px',
     }
   }
   return (

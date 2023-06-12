@@ -2,7 +2,6 @@ version: "3.7"
 networks:
   event-network:
   typescript:
-  frontend:
 services:
   nginx:
     image: nginx:latest
@@ -16,21 +15,20 @@ services:
     networks:
       - event-network
 
-  frontend:
-    container_name: frontend
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    volumes:
-      - ./frontend/src:/app/src
-      # - ./frontend:/usr/src/app
-      # - /usr/src/app/node_modules
-    ports:
-      - 3001:3000
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-    networks:
-      - frontend
+  # frontend:
+  #   container_name: frontend
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./frontend:/usr/src/app
+  #     - /usr/src/app/node_modules
+  #   ports:
+  #     - 3001:3000
+  #   environment:
+  #     - NODE_ENV=development
+  #   networks:
+  #     - frontend
 
   typescript:
     container_name: typescript

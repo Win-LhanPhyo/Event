@@ -173,12 +173,14 @@ const UserPage: React.FC<{
       border: 'none',
       borderRadius: '5px',
       background: '#daef73',
+      cursor: 'pointer',
     },
     clearbutton: {
       padding: '10px 20px',
       border: 'none',
       borderRadius: '5px',
       background: '#cfde41',
+      cursor: 'pointer',
     },     
   }
   return (
@@ -304,7 +306,7 @@ const UserPage: React.FC<{
         <h1>Delete User</h1>
         <p>Are you sure to Delete?</p>
         <div style={{display: "flex", justifyContent: "space-evenly", marginBottom: "20px", marginTop: "30px"}}>
-          <button type="reset" style={styles.clearbutton} >Clear</button>
+          <button type="reset" style={styles.clearbutton} onClick={handlDeleteModalClose}>Close</button>
           <button style={styles.submitButton} type="submit" onClick={handleConfirmDelete}>Confirm Delete</button>
         </div>
       </DeleteModalBox>

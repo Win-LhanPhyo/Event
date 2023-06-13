@@ -48,9 +48,10 @@ function HeaderPage() {
     float: 'left',
   };
   const floatRight: CSSProperties = {
-    width: '16%',
+    width: '50%',
     float: 'right',
     display: 'flex',
+    justifyContent: 'flex-end',
   };
   const registerFloatRight: CSSProperties = {
     width: '7%',

@@ -152,7 +152,6 @@ const CreatePage: React.FC = () => {
     createBox: {
         marginTop: '2rem',
         width: '450px',
-        background: '#b1b592',
     },
     createHeader: {
         display: 'flex',
@@ -162,7 +161,7 @@ const CreatePage: React.FC = () => {
         fontWeight: 'bolder',
     },
     input: {
-        padding: '20px 0 30px 0',
+        padding: '10px 0 20px 0',
         margin: "0 auto",
         width: "83%",
     }, 
@@ -173,7 +172,7 @@ const CreatePage: React.FC = () => {
         width: '95%',
         display: 'block',
         marginBottom: "5px",
-        marginTop: "30px",
+        marginTop: "25px",
     }, 
     submitButton: {
       padding: '10px 20px',

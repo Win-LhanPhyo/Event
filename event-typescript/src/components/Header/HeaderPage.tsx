@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { CSSProperties, useState } from 'react';
 function HeaderPage() {
   const [user, setUser] = useState({
@@ -70,7 +69,7 @@ function HeaderPage() {
           <div style={floatRight}>
             <span>{user.name}</span>
             <a href="/admin/users" style={styles.logoutStyle}>Users</a>
-            <a href="/admin/posts" style={styles.logoutStyle}>Posts</a> 
+            <a href="/admin/events" style={styles.logoutStyle}>Events</a> 
             <a href="/admin/login" style={styles.logoutStyle} onClick={handleLogout}>Logout</a>
           </div>
         }

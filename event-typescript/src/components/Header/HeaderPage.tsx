@@ -24,11 +24,22 @@ function HeaderPage() {
       backgroundColor: '#b1b592'
     },
     header: {
-      width: '80%',
+      width: '90%',
+    },
+    headerText: {
+      textDecoration: 'none',
+      color: '#050202',
     },
     logoutStyle: {
       marginLeft: '20px',
       textDecoration: 'none',
+    },
+    registerStyle: {
+      textDecoration: 'none',
+    },
+    loginStyle: {
+      textDecoration: 'none',
+      marginRight: '20px',
     }
   };
   const floatLeft: CSSProperties = {
@@ -37,7 +48,12 @@ function HeaderPage() {
     float: 'left',
   };
   const floatRight: CSSProperties = {
-    width: '10%',
+    width: '16%',
+    float: 'right',
+    display: 'flex',
+  };
+  const registerFloatRight: CSSProperties = {
+    width: '7%',
     float: 'right',
     display: 'flex',
   };
@@ -46,13 +62,22 @@ function HeaderPage() {
     <div style={styles.headerBox}>
       <div style={styles.header}>
         <div style={floatLeft}>
-          Foundation
+          <a href="/admin/events" style={styles.headerText}>Foundation</a>
         </div>
         { 
           user.name && 
           <div style={floatRight}>
             <span>{user.name}</span>
+            <a href="/admin/users" style={styles.logoutStyle}>Users</a>
+            <a href="/admin/posts" style={styles.logoutStyle}>Posts</a> 
             <a href="/admin/login" style={styles.logoutStyle} onClick={handleLogout}>Logout</a>
+          </div>
+        }
+        {
+          !user.name &&
+          <div style={registerFloatRight}>
+            <a href="/admin/login" style={styles.loginStyle}>Login</a>
+            <a href="/admin/register" style={styles.registerStyle}>Register</a>
           </div>
         }
         <div style={{ clear: 'both' }}></div>

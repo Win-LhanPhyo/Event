@@ -21,6 +21,7 @@
     "@types/node": "^16.7.13",
     "@types/react-dom": "^18.0.0",
     "axios": "^1.4.0",
+    "csv-parser": "^3.0.0",
     "dayjs": "^1.11.8",
     "file-saver": "^2.0.5",
     "moment": "^2.29.4",

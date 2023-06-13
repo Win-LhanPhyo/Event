@@ -22,9 +22,12 @@ import UserEdit from "./UserEdit";
 import { useState, MouseEvent } from "react";
 import moment from 'moment';
 import ModalBox from '../ModalBox/ModalBox';
+import DeleteModalBox from '../ModalBox/DeleteModalBox';
 import CreatePage from '../User/CreatePage';
 import ExportButton from './ExportButton';
 import ImportButton from "./ImportButton";
+import HeaderPage from '../../components/Header/HeaderPage';
+import axios from "axios";
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
@@ -95,6 +98,17 @@ const UserPage: React.FC<{
     setSelectedData(data);
   };
 
+  
+  /* Start Create Modal Box */
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+  /* Start Create Modal Box */
+  const [isDeleteModal, setIsDeleteModal] = React.useState(false);
+
+    /* Start Create Modal Box */
+    const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
+
+
   /**
    * close edit modl box when close button clicked
    */
@@ -103,8 +117,34 @@ const UserPage: React.FC<{
     setUserState(users);
   };
 
-  /* Start Modal Box */
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  /**
+   * close edit modl box when close button clicked
+   */
+    const handlDeleteModalClose = () => {
+      setIsDeleteModal(false);
+    };
+
+  /**
+   *  show delete modal dialog
+   * @param data for selected user
+   */
+  const handleDeleteClick = (data: User) => {
+    setSelectedUser(data);
+    setIsDeleteModal(true);
+    handleClose();
+  };
+
+  /**
+   *  Delete the selected users
+   */
+  const handleConfirmDelete = () => {
+    if(selectedUser) {
+      handleClose();
+      axios.delete('http://localhost:8000/api/user/delete/' + selectedUser.id).then(response => {
+        window.location.reload();
+      })
+    }
+  };
 
   /**
    * show create user modal when create button is clicked
@@ -118,6 +158,7 @@ const UserPage: React.FC<{
    */
   const handleCloseModal = () => {
       setIsModalOpen(false);
+      setIsDeleteModal(false);
   };
 
   // To Export the data of user
@@ -126,10 +167,23 @@ const UserPage: React.FC<{
   const styles ={
     modalScroll: {
       overflow: 'scroll',
-    }
+    },
+    submitButton: {
+      padding: '10px 20px',
+      border: 'none',
+      borderRadius: '5px',
+      background: '#daef73',
+    },
+    clearbutton: {
+      padding: '10px 20px',
+      border: 'none',
+      borderRadius: '5px',
+      background: '#cfde41',
+    },     
   }
   return (
     <ThemeProvider theme={eventTheme}>
+      <HeaderPage />
       <Box
         sx={{
           width: "100%",
@@ -213,17 +267,8 @@ const UserPage: React.FC<{
                         onClose={handleClose}
                       >
                         <MenuItem onClick={() => handleMenuItemClick(row)}>Edit</MenuItem>
-                        <MenuItem onClick={handleClose}>Delete</MenuItem>
+                        <MenuItem onClick={() => handleDeleteClick(row)}>Delete</MenuItem>
                       </Menu>
-                      <Modal 
-                        open={showEditModal}
-                        onClose={handleModalClose}
-                        aria-labelledby="modal-title"
-                      >
-                        <Box sx={style}>
-                          <UserEdit onClose={handleModalClose} selectedData={selectedData} onUpdateSelectedData={handleUpdateSelectedData} />
-                        </Box>
-                      </Modal>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -241,6 +286,28 @@ const UserPage: React.FC<{
           </Box>
         </Box>
       </Box>
+      <Modal 
+        open={showEditModal}
+        onClose={handleModalClose}
+        aria-labelledby="modal-title"
+        sx={{ backgroundColor: "rgba(0, 0, 0, 0.5)"}}
+      >
+        <Box sx={style}>
+          <UserEdit onClose={handleModalClose} selectedData={selectedData} onUpdateSelectedData={handleUpdateSelectedData} />
+        </Box>
+      </Modal>
+      <DeleteModalBox
+        isOpen={isDeleteModal}
+        onClose={handlDeleteModalClose}
+        aria-labelledby="modal-modal-title"
+      >
+        <h1>Delete User</h1>
+        <p>Are you sure to Delete?</p>
+        <div style={{display: "flex", justifyContent: "space-evenly", marginBottom: "20px", marginTop: "30px"}}>
+          <button type="reset" style={styles.clearbutton} >Clear</button>
+          <button style={styles.submitButton} type="submit" onClick={handleConfirmDelete}>Confirm Delete</button>
+        </div>
+      </DeleteModalBox>
       <div style={styles.modalScroll}>
         <ModalBox
           isOpen={isModalOpen}

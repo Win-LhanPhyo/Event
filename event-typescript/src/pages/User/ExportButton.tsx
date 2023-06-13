@@ -2,6 +2,7 @@ import React from 'react';
 import Button from '@mui/material/Button';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import dayjs from 'dayjs';
 
 interface ExportButtonProps {
   data: any[]; // The data you want to export
@@ -11,10 +12,23 @@ interface ExportButtonProps {
 const ExportButton: React.FC<ExportButtonProps> = ({ data, filename }) => {
 
     /**
+     * change Date format to "YYYY-MM-DD"
+     * @param data for change date format
+     */
+    const changeDateFormat = (data:any[]) => {
+      return data.map((item) => ({
+        ...item,
+        created_at: dayjs(item.created_at).format('YYYY/MM/DD'),
+        updated_at: dayjs(item.updated_at).format('YYYY/MM/DD')
+      }));
+    }
+
+    /**
      * export csv file from export csv button
      */
     const exportToCSV = () => {
-      const csvData = convertToCSV(data);
+      const newData = changeDateFormat(data);
+      const csvData = convertToCSV(newData);
       const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8' });
       saveAs(blob, `${filename}.csv`);
     };
@@ -23,7 +37,8 @@ const ExportButton: React.FC<ExportButtonProps> = ({ data, filename }) => {
      * export excel file from export excel button
      */
     const exportToExcel = () => {
-      const worksheet = XLSX.utils.json_to_sheet(data);
+      const newData = changeDateFormat(data);
+      const worksheet = XLSX.utils.json_to_sheet(newData);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet 1');
       const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });

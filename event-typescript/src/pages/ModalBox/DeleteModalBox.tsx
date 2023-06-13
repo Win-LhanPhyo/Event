@@ -34,8 +34,8 @@ const ModalBox: React.FC<ModalBoxProps> = ({ isOpen, onClose, children }) => {
   const containerStyle: CSSProperties = {
     backgroundColor: 'rgb(177, 181, 146)',
     padding: '6px',
-    height: '43em',
-    overflowY: 'scroll',
+    width: '400px',
+    textAlign: 'center',
   };
 
   const styles = {  

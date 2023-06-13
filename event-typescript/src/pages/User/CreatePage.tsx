@@ -133,7 +133,7 @@ const CreatePage: React.FC = () => {
 
       axios.post('http://localhost:8000/api/user/create', apiFormData).then((response) => {
         if (response.status === 200) {
-          window.location.href = '/admin/login';
+          window.location.href = '/admin/users';
         }
       }).catch(error => {
         console.log(error);
@@ -196,10 +196,6 @@ const CreatePage: React.FC = () => {
         fontSize: "14px",
         color: "#b41616",
       }
-    // submitButton:hover: {
-    //     background: '#def183',
-    //     cursor: 'pointer',
-    // }
   }
 
   return (

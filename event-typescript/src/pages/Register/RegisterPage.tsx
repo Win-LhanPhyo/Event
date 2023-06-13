@@ -181,12 +181,14 @@ const RegistrationForm: React.FC = () => {
       border: 'none',
       borderRadius: '5px',
       background: '#daef73',
+      cursor: 'pointer',
     },
     clearbutton: {
       padding: '10px 20px',
       border: 'none',
       borderRadius: '5px',
       background: '#cfde41',
+      cursor: 'pointer',
     },
     previewImage: {
       with: "200px",
@@ -197,10 +199,6 @@ const RegistrationForm: React.FC = () => {
         fontSize: "14px",
         color: "#b41616",
       }
-    // submitButton:hover: {
-    //     background: '#def183',
-    //     cursor: 'pointer',
-    // }
   }
 
   return (

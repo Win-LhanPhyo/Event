@@ -105,16 +105,13 @@ let LoginPage: React.FC = () => {
         border: 'none',
         borderRadius: '5px',
         background: '#daef73',
+        cursor: 'pointer',
     },
     errorMessage: {
       display: "block",
       fontSize: "14px",
       color: "#b41616",
     }
-    // submitButton:hover: {
-    //     background: '#def183',
-    //     cursor: 'pointer',
-    // }
   }
 
   return (

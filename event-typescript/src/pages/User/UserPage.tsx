@@ -2,6 +2,7 @@ import * as React from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
+import Button from '@mui/material/Button';
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
@@ -13,9 +14,18 @@ import { eventTheme } from "../../entries/theme";
 import Pagination from "@mui/material/Pagination";
 import Box from "@mui/material/Box";
 import { User } from "../../redux/domain/userList";
+import "../../App.css";
 import styled from "@emotion/styled";
 import { IconButton, Menu, MenuItem, Modal } from "@mui/material";
 import { MoreVertTwoTone } from "@mui/icons-material";
+import { useState, MouseEvent } from "react";
+import moment from 'moment';
+import DeleteModalBox from '../ModalBox/DeleteModalBox';
+import ExportButton from './ExportButton';
+import ImportButton from "./ImportButton";
+import HeaderPage from '../../components/Header/HeaderPage';
+import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
@@ -29,36 +39,124 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
+const style = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 500,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  borderRadius: [0, '8px', '8px', 0],
+  boxShadow: 24,
+  p: 4,
+};
+
+
+/* End Modal Box */
+
 const UserPage: React.FC<{
   children?: React.ReactNode;
 }> = () => {
   const [users, setUserState] = useRecoilState(userState);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const navigate = useNavigate();
+
+  /**
+   * icon button click show edit modal small box
+   * @param event
+   */
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
+  /**
+   * close the modal box for icon click
+   */
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const handleMenuItemClick = () => {
+
+  /* Start Create Modal Box */
+  const [isDeleteModal, setIsDeleteModal] = React.useState(false);
+
+  /* Start Create Modal Box */
+  const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
+
+  /**
+   * close edit modl box when close button clicked
+   */
+  const handlDeleteModalClose = () => {
+    setIsDeleteModal(false);
+  };
+
+  /**
+   *  show delete modal dialog
+   * @param data for selected user
+   */
+  const handleDeleteClick = (data: User) => {
+    setSelectedUser(data);
+    setIsDeleteModal(true);
     handleClose();
   };
+
+  /**
+   *  Delete the selected users
+   */
+  const handleConfirmDelete = () => {
+    if(selectedUser) {
+      handleClose();
+      axios.delete('http://localhost:8000/api/user/delete/' + selectedUser.id).then(response => {
+        window.location.reload();
+      })
+    }
+  };
+
+  // To Export the data of user
+  const data = users.data;
+
+  const styles ={
+    modalScroll: {
+      overflow: 'scroll',
+    },
+    submitButton: {
+      padding: '10px 20px',
+      border: 'none',
+      borderRadius: '5px',
+      background: '#daef73',
+      cursor: 'pointer',
+    },
+    clearbutton: {
+      padding: '10px 20px',
+      border: 'none',
+      borderRadius: '5px',
+      background: '#cfde41',
+      cursor: 'pointer',
+    },     
+  }
   return (
     <ThemeProvider theme={eventTheme}>
+      <HeaderPage />
       <Box
         sx={{
           width: "100%",
           backgroundColor: "success.light",
-          position: "absolute",
-          // zIndex: "1"
+          position: "relative !important",
         }}
       >
         <Box sx={{ px: 5, py: 5 }}>
+          <Box sx={{pb: 3, textAlign: 'end'}}>
+            <div>
+              <ImportButton />
+              <ExportButton data={data} filename="exported_data"/>
+              <Button sx={{color: 'primary', border: '1px solid blue'}} onClick={() => navigate('/admin/create')}>Create</Button>
+          </div>
+          </Box>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <StyledTableRow>
-                  <TableCell align="center">ID</TableCell>
+                  <TableCell sx={{ align: 'center', display: 'flex' }}>ID</TableCell>
                   <TableCell align="center">Profile</TableCell>
                   <TableCell align="center">Name</TableCell>
                   <TableCell align="center">Email</TableCell>
@@ -99,15 +197,15 @@ const UserPage: React.FC<{
                     </TableCell>
                     <TableCell align="right">{row.name}</TableCell>
                     <TableCell align="right">{row.email}</TableCell>
-                    <TableCell align="right">{row.role}</TableCell>
-                    <TableCell align="right">{row.dob}</TableCell>
+                    <TableCell align="right">{row.role == "0" ? "User" : "Admin"}</TableCell>
+                    <TableCell align="right">{row?.dob ? moment(row.dob).format("YYYY-MM-DD") : ''}</TableCell>
                     <TableCell align="right">{row.address}</TableCell>
                     <TableCell align="right">{row.phone}</TableCell>
                     <TableCell align="right">
-                      {row.created_at.toString()}
+                      {row?.created_at ? moment(row.created_at).format("YYYY-MM-DD") : ''}
                     </TableCell>
                     <TableCell align="right">
-                      {row.updated_at.toString()}
+                      {row?.updated_at ? moment(row.updated_at).format("YYYY-MM-DD") : ''}
                     </TableCell>
                     <TableCell align="right">
                       <IconButton
@@ -121,8 +219,8 @@ const UserPage: React.FC<{
                         open={Boolean(anchorEl)}
                         onClose={handleClose}
                       >
-                        <MenuItem onClick={handleMenuItemClick}>Edit</MenuItem>
-                        <MenuItem onClick={handleClose}>Delete</MenuItem>
+                        <MenuItem onClick={() => navigate(`/admin/edit/${row.id}`)}>Edit</MenuItem>
+                        <MenuItem onClick={() => handleDeleteClick(row)}>Delete</MenuItem>
                       </Menu>
                     </TableCell>
                   </TableRow>
@@ -141,7 +239,20 @@ const UserPage: React.FC<{
           </Box>
         </Box>
       </Box>
+      <DeleteModalBox
+        isOpen={isDeleteModal}
+        onClose={handlDeleteModalClose}
+        aria-labelledby="modal-modal-title"
+      >
+        <h1>Delete User</h1>
+        <p>Are you sure to Delete?</p>
+        <div style={{display: "flex", justifyContent: "space-evenly", marginBottom: "20px", marginTop: "30px"}}>
+          <button type="reset" style={styles.clearbutton} onClick={handlDeleteModalClose}>Close</button>
+          <button style={styles.submitButton} type="submit" onClick={handleConfirmDelete}>Confirm Delete</button>
+        </div>
+      </DeleteModalBox>
     </ThemeProvider>
   );
 };
+
 export default UserPage;

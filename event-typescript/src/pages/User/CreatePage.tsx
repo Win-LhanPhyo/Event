@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import HeaderPage from '../../components/Header/HeaderPage';
 
-const RegistrationForm: React.FC = () => {
+const CreatePage: React.FC = () => {
   interface FormData {
     name: string,
     email: string,
@@ -32,6 +32,7 @@ const RegistrationForm: React.FC = () => {
     confirmPassword: '',
     phone: '',
     profile: '',
+    role: '',
     address: '',
     dob: ''
   });
@@ -47,8 +48,8 @@ const RegistrationForm: React.FC = () => {
   const validateForm = () => {
     // Assuming newErrors is an object to store the error messages
     const newErrors: { [key: string]: string } = {}; 
-    const  requiredFields:string[] = [formData.name, formData.password, formData.confirmPassword, formData.phone, formData.profile, formData.address, formData.dob];
-    const errorMessages: string[] = ['name', 'password', 'confirmPassword', 'phone', 'profile', 'address', 'dob']; 
+    const  requiredFields:string[] = [formData.name, formData.password, formData.confirmPassword, formData.phone, formData.profile, formData.role, formData.address, formData.dob];
+    const errorMessages: string[] = ['name', 'password', 'confirmPassword', 'phone', 'profile', 'role', 'address', 'dob']; 
     for(let i=0; i<requiredFields.length; i++){
       if(requiredFields[i] === ''){
         for(let j=0; j<errorMessages.length; j++){
@@ -123,7 +124,7 @@ const RegistrationForm: React.FC = () => {
       apiFormData.append("name", formData.name);
       apiFormData.append("email", formData.email);
       apiFormData.append("password", formData.password);
-      apiFormData.append("role", '0');
+      apiFormData.append("role", formData.role);
       apiFormData.append("dob", formData.dob);
       apiFormData.append("phone", formData.phone);
       apiFormData.append("address", formData.address);
@@ -133,7 +134,7 @@ const RegistrationForm: React.FC = () => {
 
       axios.post('http://localhost:8000/api/user/create', apiFormData).then((response) => {
         if (response.status === 200) {
-          window.location.href = '/admin/login';
+          window.location.href = '/admin/users';
         }
       }).catch(error => {
         console.log(error);
@@ -144,18 +145,18 @@ const RegistrationForm: React.FC = () => {
   };
 
   const styles = {    
-    register: {
+    create: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#706d53',
     },
-    registerBox: {
-        marginTop: '4rem',
+    createBox: {
+        marginTop: '1rem',
         width: '450px',
         background: '#b1b592',
     },
-    registerHeader: {
+    createHeader: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -166,12 +167,20 @@ const RegistrationForm: React.FC = () => {
     input: {
         padding: '20px 0 30px 0',
         margin: "0 auto",
-        width: "83%",
+        width: "90%",
     }, 
     inputStyle: {
         border: 'none',
         borderRadius: '5px',
         padding: '10px',
+        width: '95%',
+        display: 'block',
+        marginBottom: "5px",
+        marginTop: "30px",
+    },
+    radioImageStyle: {
+        border: 'none',
+        borderRadius: '5px',
         width: '95%',
         display: 'block',
         marginBottom: "5px",
@@ -205,9 +214,9 @@ const RegistrationForm: React.FC = () => {
   return (
     <div>
       <HeaderPage />
-      <form style={styles.register} onSubmit={handleSubmit}> 
-        <div style={styles.registerBox}>
-        <div style={styles.registerHeader}>Register</div>
+      <form style={styles.create} onSubmit={handleSubmit}> 
+        <div style={styles.createBox}>
+        <div style={styles.createHeader}>Create User</div>
         <div style={styles.input}>
           <input 
             style={styles.inputStyle} 
@@ -218,13 +227,13 @@ const RegistrationForm: React.FC = () => {
             onChange={handleChange}
           />
           {errors.name && <span style={styles.errorMessage}>{errors.name}</span>}
-          {/* <div style={styles.inputStyle}>
+          <div style={styles.radioImageStyle}>
             <label>
               <input
                 type="radio"
                 name="role"
-                value="admin"
-                checked={formData.role === 'admin'}
+                value="1"
+                checked={formData.role === '1'}
                 onChange={handleChange}
               />
               Admin
@@ -233,14 +242,14 @@ const RegistrationForm: React.FC = () => {
               <input
                 name="role"
                 type="radio"
-                value="user"
-                checked={formData.role ==='user' ? true : false}
+                value="0"
+                checked={formData.role ==='0' ? true : false}
                 onChange={handleChange}
               />
               User
             </label>
           </div>
-          {errors.role && <span style={styles.errorMessage}>{errors.role}</span>} */}
+          {errors.role && <span style={styles.errorMessage}>{errors.role}</span>}
           <input
             style={styles.inputStyle} 
             placeholder="Enter your email" 
@@ -268,7 +277,7 @@ const RegistrationForm: React.FC = () => {
             onChange={handleChange}
           />
           {errors.dob && <span style={styles.errorMessage}>{errors.dob}</span>}
-          <div style={styles.inputStyle}>
+          <div style={styles.radioImageStyle}>
             { 
               previewImage && 
               <img 
@@ -313,21 +322,14 @@ const RegistrationForm: React.FC = () => {
           />
           {errors.phone && <span style={styles.errorMessage}>{errors.phone}</span>}
         </div>
-        <div style={{display: "flex", justifyContent: "space-evenly"}}>
+        <div style={{display: "flex", justifyContent: "space-evenly", marginBottom: "20px"}}>
           <button type="reset" style={styles.clearbutton} onClick={handleClear}>Clear</button>
-          <button style={styles.submitButton} type="submit">Register</button>
-        </div>
-        <div style={{display: "flex", justifyContent: "center", marginTop: "15px", marginBottom: "20px", fontSize: "13px"}}>
-          <span>Click Here for </span>
-          <a href="/admin/login">
-            Login
-          </a>
+          <button style={styles.submitButton} type="submit">Create</button>
         </div>
         </div>
       </form>
     </div>
-      
   )
 }  
 
-export default RegistrationForm;
+export default CreatePage;

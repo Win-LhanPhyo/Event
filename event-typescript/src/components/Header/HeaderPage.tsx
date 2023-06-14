@@ -1,11 +1,17 @@
 import React, { CSSProperties, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 function HeaderPage() {
   const [user, setUser] = useState({
     name: '',
   });
 
+  const navigate = useNavigate();
+
   const handleLogout = () => {
     localStorage.removeItem('user');
+    navigate('/admin/login');
   };
 
   React.useEffect(() => {
@@ -62,22 +68,22 @@ function HeaderPage() {
     <div style={styles.headerBox}>
       <div style={styles.header}>
         <div style={floatLeft}>
-          <a href="/admin/events" style={styles.headerText}>Foundation</a>
+          <a  onClick={() => navigate("/admin/events")} style={styles.headerText}>Foundation</a>
         </div>
         { 
           user.name && 
           <div style={floatRight}>
             <span>{user.name}</span>
-            <a href="/admin/users" style={styles.logoutStyle}>Users</a>
-            <a href="/admin/events" style={styles.logoutStyle}>Events</a> 
-            <a href="/admin/login" style={styles.logoutStyle} onClick={handleLogout}>Logout</a>
+            <a onClick={() => navigate("/admin/users")} style={styles.logoutStyle}>Users</a>
+            <a onClick={() => navigate("/admin/events")} style={styles.logoutStyle}>Events</a> 
+            <a style={styles.logoutStyle} onClick={handleLogout}>Logout</a>
           </div>
         }
         {
           !user.name &&
           <div style={registerFloatRight}>
-            <a href="/admin/login" style={styles.loginStyle}>Login</a>
-            <a href="/admin/register" style={styles.registerStyle}>Register</a>
+            <a onClick={() => navigate("/admin/login")} style={styles.loginStyle}>Login</a>
+            <a onClick={() => navigate("/admin/register")} style={styles.registerStyle}>Register</a>
           </div>
         }
         <div style={{ clear: 'both' }}></div>

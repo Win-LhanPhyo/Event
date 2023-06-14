@@ -18,16 +18,14 @@ import "../../App.css";
 import styled from "@emotion/styled";
 import { IconButton, Menu, MenuItem, Modal } from "@mui/material";
 import { MoreVertTwoTone } from "@mui/icons-material";
-import UserEdit from "./UserEdit";
 import { useState, MouseEvent } from "react";
 import moment from 'moment';
-import ModalBox from '../ModalBox/ModalBox';
 import DeleteModalBox from '../ModalBox/DeleteModalBox';
-import CreatePage from '../User/CreatePage';
 import ExportButton from './ExportButton';
 import ImportButton from "./ImportButton";
 import HeaderPage from '../../components/Header/HeaderPage';
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
@@ -62,8 +60,7 @@ const UserPage: React.FC<{
 }> = () => {
   const [users, setUserState] = useRecoilState(userState);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedData, setSelectedData] = useState<User | null>(null);
+  const navigate = useNavigate();
 
   /**
    * icon button click show edit modal small box
@@ -80,49 +77,18 @@ const UserPage: React.FC<{
     setAnchorEl(null);
   };
 
-  /**
-   * edit modal box's close icon button event
-   */
-  const handleUpdateSelectedData = (action: any) => {
-    if (action.type === 'UPDATE_SELECTED_DATA') {
-      setSelectedData(action.data);
-    }
-  };
-
-  /**
-   * show edit modl box when edit button clicked
-   */
-  const handleMenuItemClick = (data: User) => {
-    handleClose();
-    setShowEditModal(true);
-    setSelectedData(data);
-  };
-
-  
-  /* Start Create Modal Box */
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
-
   /* Start Create Modal Box */
   const [isDeleteModal, setIsDeleteModal] = React.useState(false);
 
-    /* Start Create Modal Box */
-    const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
-
+  /* Start Create Modal Box */
+  const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
 
   /**
    * close edit modl box when close button clicked
    */
-  const handleModalClose = () => {
-    setShowEditModal(false);
-    setUserState(users);
+  const handlDeleteModalClose = () => {
+    setIsDeleteModal(false);
   };
-
-  /**
-   * close edit modl box when close button clicked
-   */
-    const handlDeleteModalClose = () => {
-      setIsDeleteModal(false);
-    };
 
   /**
    *  show delete modal dialog
@@ -144,21 +110,6 @@ const UserPage: React.FC<{
         window.location.reload();
       })
     }
-  };
-
-  /**
-   * show create user modal when create button is clicked
-   */
-  const handleCreateClick = () => {
-      setIsModalOpen(true);
-  };
-
-  /**
-   * close create user modal 
-   */
-  const handleCloseModal = () => {
-      setIsModalOpen(false);
-      setIsDeleteModal(false);
   };
 
   // To Export the data of user
@@ -198,7 +149,7 @@ const UserPage: React.FC<{
             <div>
               <ImportButton />
               <ExportButton data={data} filename="exported_data"/>
-              <Button sx={{color: 'primary', border: '1px solid blue'}} onClick={handleCreateClick}>Create</Button>
+              <Button sx={{color: 'primary', border: '1px solid blue'}} onClick={() => navigate('/admin/create')}>Create</Button>
           </div>
           </Box>
           <TableContainer component={Paper}>
@@ -268,7 +219,7 @@ const UserPage: React.FC<{
                         open={Boolean(anchorEl)}
                         onClose={handleClose}
                       >
-                        <MenuItem onClick={() => handleMenuItemClick(row)}>Edit</MenuItem>
+                        <MenuItem onClick={() => navigate(`/admin/edit/${row.id}`)}>Edit</MenuItem>
                         <MenuItem onClick={() => handleDeleteClick(row)}>Delete</MenuItem>
                       </Menu>
                     </TableCell>
@@ -288,16 +239,6 @@ const UserPage: React.FC<{
           </Box>
         </Box>
       </Box>
-      <Modal 
-        open={showEditModal}
-        onClose={handleModalClose}
-        aria-labelledby="modal-title"
-        sx={{ backgroundColor: "rgba(0, 0, 0, 0.5)"}}
-      >
-        <Box sx={style}>
-          <UserEdit onClose={handleModalClose} selectedData={selectedData} onUpdateSelectedData={handleUpdateSelectedData} />
-        </Box>
-      </Modal>
       <DeleteModalBox
         isOpen={isDeleteModal}
         onClose={handlDeleteModalClose}
@@ -310,15 +251,6 @@ const UserPage: React.FC<{
           <button style={styles.submitButton} type="submit" onClick={handleConfirmDelete}>Confirm Delete</button>
         </div>
       </DeleteModalBox>
-      <div style={styles.modalScroll}>
-        <ModalBox
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          aria-labelledby="modal-modal-title"
-        >
-          <CreatePage />
-        </ModalBox>
-      </div>
     </ThemeProvider>
   );
 };

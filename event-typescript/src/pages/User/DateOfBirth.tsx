@@ -1,30 +1,33 @@
-import * as React from 'react';
 import dayjs, { Dayjs } from 'dayjs';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateField } from '@mui/x-date-pickers/DateField';
-import { User } from '../../redux/domain/userList';
+import React from 'react';
 
 type DateOfBirthProps = {
-    selectData: User;
+  selectData: string;
 };
+
 const DateOfBirth = ({ selectData }: DateOfBirthProps) => {
-  const [value, setValue] = React.useState<Dayjs | null>(dayjs(selectData?.dob));
+  const [dateValue, setDateValue] = React.useState<Dayjs | null>(null);
+
+  React.useEffect(() => {
+    if (selectData) {
+      setDateValue(dayjs(selectData));
+    }
+  }, [selectData]);
+
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    const parsedDate = dayjs(value);
+    setDateValue(parsedDate);
+  };
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DemoContainer components={['DateField', 'DateField']}>
-        {value && 
-          <DateField
-          label="Date of Birth"
-          value={value}
-        //   onChange={(newValue) => setValue(newValue)}
-        />
-        }
-      </DemoContainer>
-    </LocalizationProvider>
+    <input
+      type="date"
+      value={dateValue ? dateValue.format('YYYY-MM-DD') : ''}
+      onChange={handleDateChange}
+    />
   );
-}
+};
 
 export default DateOfBirth;

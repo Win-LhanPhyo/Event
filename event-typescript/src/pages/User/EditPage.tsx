@@ -1,13 +1,12 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
+import { useParams } from "react-router-dom";
 import HeaderPage from '../../components/Header/HeaderPage';
 
-const RegistrationForm: React.FC = () => {
+const EditPage: React.FC = () => {
   interface FormData {
     name: string,
     email: string,
-    password: string,
-    confirmPassword: string,
     phone: string,
     profile: string,
     role: string,
@@ -17,8 +16,6 @@ const RegistrationForm: React.FC = () => {
   const initialFormData: FormData = {
     name: '',
     email: '',
-    password: '',
-    confirmPassword: '',
     phone: '',
     profile: '',
     role: '',
@@ -28,10 +25,9 @@ const RegistrationForm: React.FC = () => {
   const [errors, setErrors]  = useState<{[key: string]: string}>({
     name: '',
     email: '',
-    password: '',
-    confirmPassword: '',
     phone: '',
     profile: '',
+    role: '',
     address: '',
     dob: ''
   });
@@ -40,15 +36,27 @@ const RegistrationForm: React.FC = () => {
   const [previewImage, setPreviewImage] = useState<string | ArrayBuffer | null>(null);
   const [selectedFile, setSelectedFile] = useState<any>(null);
 
+  const {id} = useParams();
+
+  /**
+   * To get the selected ID
+   */
+  React.useEffect(() => {
+    axios.get(`http://localhost:8000/api/user/detail/${id}`).then((response) => {
+      if (response.status === 200) {
+        setFormData({...response.data});
+      }
+    })
+  }, []);
+
   /**
    * validation errorr message for input fields
    * @returns 
    */
   const validateForm = () => {
-    // Assuming newErrors is an object to store the error messages
     const newErrors: { [key: string]: string } = {}; 
-    const  requiredFields:string[] = [formData.name, formData.password, formData.confirmPassword, formData.phone, formData.profile, formData.address, formData.dob];
-    const errorMessages: string[] = ['name', 'password', 'confirmPassword', 'phone', 'profile', 'address', 'dob']; 
+    const  requiredFields:string[] = [formData.name, formData.phone, formData.profile, formData.role, formData.address, formData.dob];
+    const errorMessages: string[] = ['name', 'phone', 'profile', 'role', 'address', 'dob']; 
     for(let i=0; i<requiredFields.length; i++){
       if(requiredFields[i] === ''){
         for(let j=0; j<errorMessages.length; j++){
@@ -56,12 +64,6 @@ const RegistrationForm: React.FC = () => {
             newErrors[errorMessages[j]] = `${errorMessages[j].charAt(0).toUpperCase() + errorMessages[j].slice(1)} is required.`;
           }
         }
-      }
-      if(requiredFields[1] !== requiredFields[2] && requiredFields[1] !== '') {
-        newErrors[errorMessages[1]] = 'Password and Confirm Password do not match.';
-      }
-      if(requiredFields[1] !== requiredFields[2] && requiredFields[2] !== '') {
-        newErrors[errorMessages[2]] = 'Passwords and Confirm Password do not match.';
       }
     }
 
@@ -81,7 +83,7 @@ const RegistrationForm: React.FC = () => {
    */
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if(file) {
+    if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewImage(reader.result);
@@ -106,56 +108,50 @@ const RegistrationForm: React.FC = () => {
     setFormData(initialFormData);
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name,value } = event.target;
-    setFormData({...formData, [name]:value });
-  }
+  /**
+ * input field value changes
+ */
+  const inputChangeForUser = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    const file = event.target;
+    setSelectedFile(file);
+    setFormData((prevFormData: any) => ({
+      ...prevFormData,
+      [name]: value
+    }));
+  };
 
   /**
-   * handel submit event for form clicked event
-   * @param event 
+   * User Update form
+   * @param e
    */
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>)  => {
-    event.preventDefault();
+  const editFormSubmit = (e: FormEvent) => {
+    e.preventDefault();
     const isFormValid = validateForm();
-    if(isFormValid) {
-      const apiFormData = new FormData();
-      apiFormData.append("name", formData.name);
-      apiFormData.append("email", formData.email);
-      apiFormData.append("password", formData.password);
-      apiFormData.append("role", '0');
-      apiFormData.append("dob", formData.dob);
-      apiFormData.append("phone", formData.phone);
-      apiFormData.append("address", formData.address);
-      if (selectedFile) {
-        apiFormData.append("profile", selectedFile);
-      }
-
-      axios.post('http://localhost:8000/api/user/create', apiFormData).then((response) => {
+    if(isFormValid && formData) {
+      axios.post(`http://localhost:8000/api/user/update/${id}`, formData).then((response) => {
         if (response.status === 200) {
-          window.location.href = '/admin/login';
+          window.location.href = '/admin/users';
         }
       }).catch(error => {
         console.log(error);
       });
-    }else {
-      console.log(errors);
     }
   };
 
   const styles = {    
-    register: {
+    create: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#706d53',
     },
-    registerBox: {
-        marginTop: '4rem',
+    createBox: {
+        marginTop: '1rem',
         width: '450px',
         background: '#b1b592',
     },
-    registerHeader: {
+    createHeader: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -166,12 +162,20 @@ const RegistrationForm: React.FC = () => {
     input: {
         padding: '20px 0 30px 0',
         margin: "0 auto",
-        width: "83%",
+        width: "90%",
     }, 
     inputStyle: {
         border: 'none',
         borderRadius: '5px',
         padding: '10px',
+        width: '95%',
+        display: 'block',
+        marginBottom: "5px",
+        marginTop: "30px",
+    },
+    radioImageStyle: {
+        border: 'none',
+        borderRadius: '5px',
         width: '95%',
         display: 'block',
         marginBottom: "5px",
@@ -205,27 +209,27 @@ const RegistrationForm: React.FC = () => {
   return (
     <div>
       <HeaderPage />
-      <form style={styles.register} onSubmit={handleSubmit}> 
-        <div style={styles.registerBox}>
-        <div style={styles.registerHeader}>Register</div>
+      <form style={styles.create} onSubmit={editFormSubmit}> 
+        <div style={styles.createBox}>
+        <div style={styles.createHeader}>Edit User</div>
         <div style={styles.input}>
           <input 
             style={styles.inputStyle} 
             placeholder="Enter your name" 
             name="name" 
-            type="name" 
-            value={formData.name} 
-            onChange={handleChange}
+            type="name"
+            value={formData?.name}
+            onChange={inputChangeForUser}
           />
           {errors.name && <span style={styles.errorMessage}>{errors.name}</span>}
-          {/* <div style={styles.inputStyle}>
+          <div style={styles.radioImageStyle}>
             <label>
               <input
                 type="radio"
                 name="role"
-                value="admin"
-                checked={formData.role === 'admin'}
-                onChange={handleChange}
+                value="1"
+                checked={formData?.role.toString() === '1'}
+                onChange={inputChangeForUser}
               />
               Admin
             </label>
@@ -233,21 +237,21 @@ const RegistrationForm: React.FC = () => {
               <input
                 name="role"
                 type="radio"
-                value="user"
-                checked={formData.role ==='user' ? true : false}
-                onChange={handleChange}
+                value="0"
+                checked={formData?.role.toString() === '0'}
+                onChange={inputChangeForUser}
               />
               User
             </label>
           </div>
-          {errors.role && <span style={styles.errorMessage}>{errors.role}</span>} */}
+          {errors.role && <span style={styles.errorMessage}>{errors.role}</span>}
           <input
             style={styles.inputStyle} 
             placeholder="Enter your email" 
             name="email" 
-            type="email" 
-            value={formData.email} 
-            onChange={handleChange}
+            type="email"
+            value={formData?.email}
+            onChange={inputChangeForUser}
           />
           {errors.email && <span style={styles.errorMessage}>{errors.email}</span>}
           <input
@@ -255,8 +259,8 @@ const RegistrationForm: React.FC = () => {
             placeholder="Enter your address"
             name="address"
             type="address"
-            value={formData.address}
-            onChange={handleChange}
+            value={formData?.address}
+            onChange={inputChangeForUser}
           />
           {errors.address && <span style={styles.errorMessage}>{errors.address}</span>}
           <input
@@ -264,70 +268,44 @@ const RegistrationForm: React.FC = () => {
             placeholder="Enter your Date of Birth"
             name="dob"
             type="date"
-            value={formData.dob}
-            onChange={handleChange}
+            value={formData?.dob}
+            onChange={inputChangeForUser}
           />
           {errors.dob && <span style={styles.errorMessage}>{errors.dob}</span>}
-          <div style={styles.inputStyle}>
-            { 
+          <div style={styles.radioImageStyle}>
+            {/* { 
               previewImage && 
               <img 
                 src={previewImage.toString()} 
                 style={styles.previewImage} 
                 alt="profile"
               />
-            }
+            } */}
             <input
               type="file"
               name="profile"
-              value={formData.profile}
               onChange={handleFileChange}
             />
           </div>
           {errors.profile && <span style={styles.errorMessage}>{errors.profile}</span>}
           <input
-            style={styles.inputStyle} 
-            placeholder="Enter your password" 
-            name="password"
-            type="password" 
-            value={formData.password} 
-            onChange={handleChange}
-          />
-          {errors.password && <span style={styles.errorMessage}>{errors.password}</span>}
-          <input
-            style={styles.inputStyle}
-            placeholder="Enter your confrim password"
-            name="confirmPassword"
-            type="password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-          />
-          {errors.confirmPassword && <span style={styles.errorMessage}>{errors.confirmPassword}</span>}
-          <input
             style={styles.inputStyle}
             placeholder="Enter your phone number"
             name="phone"
             type="tel"
-            value={formData.phone}
-            onChange={handleChange}
+            value={formData?.phone}
+            onChange={inputChangeForUser}
           />
           {errors.phone && <span style={styles.errorMessage}>{errors.phone}</span>}
         </div>
-        <div style={{display: "flex", justifyContent: "space-evenly"}}>
-          <button type="reset" style={styles.clearbutton} onClick={handleClear}>Clear</button>
-          <button style={styles.submitButton} type="submit">Register</button>
-        </div>
-        <div style={{display: "flex", justifyContent: "center", marginTop: "15px", marginBottom: "20px", fontSize: "13px"}}>
-          <span>Click Here for </span>
-          <a href="/admin/login">
-            Login
-          </a>
+        <div style={{display: "flex", justifyContent: "space-evenly", marginBottom: "20px"}}>
+          <button type="reset" style={styles.clearbutton} onClick={handleClear}>Cancel</button>
+          <button style={styles.submitButton} type="submit">Update User</button>
         </div>
         </div>
       </form>
     </div>
-      
   )
 }  
 
-export default RegistrationForm;
+export default EditPage;

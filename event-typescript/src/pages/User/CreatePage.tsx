@@ -1,5 +1,6 @@
 import axios from "axios";
-import React, { useState } from "react"; 
+import React, { useState } from "react";
+import HeaderPage from '../../components/Header/HeaderPage';
 
 const CreatePage: React.FC = () => {
   interface FormData {
@@ -148,10 +149,12 @@ const CreatePage: React.FC = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#706d53',
     },
     createBox: {
-        marginTop: '2rem',
+        marginTop: '1rem',
         width: '450px',
+        background: '#b1b592',
     },
     createHeader: {
         display: 'flex',
@@ -159,11 +162,12 @@ const CreatePage: React.FC = () => {
         alignItems: 'center',
         fontSize:' xx-large',
         fontWeight: 'bolder',
+        marginTop: '52px',
     },
     input: {
-        padding: '10px 0 20px 0',
+        padding: '20px 0 30px 0',
         margin: "0 auto",
-        width: "83%",
+        width: "90%",
     }, 
     inputStyle: {
         border: 'none',
@@ -172,19 +176,29 @@ const CreatePage: React.FC = () => {
         width: '95%',
         display: 'block',
         marginBottom: "5px",
-        marginTop: "25px",
+        marginTop: "30px",
+    },
+    radioImageStyle: {
+        border: 'none',
+        borderRadius: '5px',
+        width: '95%',
+        display: 'block',
+        marginBottom: "5px",
+        marginTop: "30px",
     }, 
     submitButton: {
       padding: '10px 20px',
       border: 'none',
       borderRadius: '5px',
       background: '#daef73',
+      cursor: 'pointer',
     },
     clearbutton: {
       padding: '10px 20px',
       border: 'none',
       borderRadius: '5px',
       background: '#cfde41',
+      cursor: 'pointer',
     },
     previewImage: {
       with: "200px",
@@ -199,6 +213,7 @@ const CreatePage: React.FC = () => {
 
   return (
     <div>
+      <HeaderPage />
       <form style={styles.create} onSubmit={handleSubmit}> 
         <div style={styles.createBox}>
         <div style={styles.createHeader}>Create User</div>
@@ -212,7 +227,7 @@ const CreatePage: React.FC = () => {
             onChange={handleChange}
           />
           {errors.name && <span style={styles.errorMessage}>{errors.name}</span>}
-          <div style={styles.inputStyle}>
+          <div style={styles.radioImageStyle}>
             <label>
               <input
                 type="radio"
@@ -262,7 +277,7 @@ const CreatePage: React.FC = () => {
             onChange={handleChange}
           />
           {errors.dob && <span style={styles.errorMessage}>{errors.dob}</span>}
-          <div style={styles.inputStyle}>
+          <div style={styles.radioImageStyle}>
             { 
               previewImage && 
               <img 
@@ -314,7 +329,6 @@ const CreatePage: React.FC = () => {
         </div>
       </form>
     </div>
-      
   )
 }  
 

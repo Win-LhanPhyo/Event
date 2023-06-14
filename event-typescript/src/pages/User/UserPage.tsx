@@ -251,10 +251,10 @@ const UserPage: React.FC<{
                     <TableCell align="right">{row.address}</TableCell>
                     <TableCell align="right">{row.phone}</TableCell>
                     <TableCell align="right">
-                      {row.created_at.toString()}
+                      {row?.created_at ? moment(row.created_at).format("YYYY-MM-DD") : ''}
                     </TableCell>
                     <TableCell align="right">
-                      {row.updated_at.toString()}
+                      {row?.updated_at ? moment(row.updated_at).format("YYYY-MM-DD") : ''}
                     </TableCell>
                     <TableCell align="right">
                       <IconButton

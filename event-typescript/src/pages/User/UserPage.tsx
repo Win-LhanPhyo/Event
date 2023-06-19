@@ -16,12 +16,12 @@ import Box from "@mui/material/Box";
 import { User } from "../../redux/domain/userList";
 import "../../App.css";
 import styled from "@emotion/styled";
-import { IconButton, Menu, MenuItem, Modal } from "@mui/material";
+import { IconButton, Menu, MenuItem } from "@mui/material";
 import { MoreVertTwoTone } from "@mui/icons-material";
 import { useState, MouseEvent } from "react";
 import moment from 'moment';
 import DeleteModalBox from '../ModalBox/DeleteModalBox';
-import ExportButton from './ExportButton';
+import ExportButton from '../ExportButton';
 import ImportButton from "./ImportButton";
 import HeaderPage from '../../components/Header/HeaderPage';
 import axios from "axios";
@@ -60,14 +60,16 @@ const UserPage: React.FC<{
 }> = () => {
   const [users, setUserState] = useRecoilState(userState);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [ selectedId, setSelectedId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   /**
    * icon button click show edit modal small box
    * @param event
    */
-  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (event: MouseEvent<HTMLButtonElement>, id: string) => {
     setAnchorEl(event.currentTarget);
+    setSelectedId(id);
   };
 
   /**
@@ -75,6 +77,7 @@ const UserPage: React.FC<{
    */
   const handleClose = () => {
     setAnchorEl(null);
+    setSelectedId(null);
   };
 
   /* Start Create Modal Box */
@@ -123,14 +126,16 @@ const UserPage: React.FC<{
       padding: '10px 20px',
       border: 'none',
       borderRadius: '5px',
-      background: '#daef73',
+      background: '#d41616',
+      color: '#e6f2ff',
       cursor: 'pointer',
     },
     clearbutton: {
       padding: '10px 20px',
       border: 'none',
       borderRadius: '5px',
-      background: '#cfde41',
+      color: '#e6f2ff',
+      background: '#1a8cff',
       cursor: 'pointer',
     },     
   }
@@ -140,17 +145,19 @@ const UserPage: React.FC<{
       <Box
         sx={{
           width: "100%",
-          backgroundColor: "success.light",
+          backgroundColor: "#4e7294",
           position: "relative !important",
         }}
       >
         <Box sx={{ px: 5, py: 5 }}>
-          <Box sx={{pb: 3, textAlign: 'end'}}>
+          <Box sx={{pb: 3, textAlign: 'end', display: 'flex', justifyContent: 'space-between'}}>
             <div>
               <ImportButton />
+            </div>
+            <div>
               <ExportButton data={data} filename="exported_data"/>
-              <Button sx={{color: 'primary', border: '1px solid blue'}} onClick={() => navigate('/admin/create')}>Create</Button>
-          </div>
+              <Button sx={{color: 'white', border: '2px solid #52ea52', background: '#35c4358c'}} onClick={() => navigate('/admin/create')}>Create</Button>
+            </div>
           </Box>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -195,28 +202,30 @@ const UserPage: React.FC<{
                         className="user-img"
                       />
                     </TableCell>
-                    <TableCell align="right">{row.name}</TableCell>
-                    <TableCell align="right">{row.email}</TableCell>
-                    <TableCell align="right">{row.role == "0" ? "User" : "Admin"}</TableCell>
-                    <TableCell align="right">{row?.dob ? moment(row.dob).format("YYYY-MM-DD") : ''}</TableCell>
-                    <TableCell align="right">{row.address}</TableCell>
-                    <TableCell align="right">{row.phone}</TableCell>
-                    <TableCell align="right">
+                    <TableCell align="center">{row.name}</TableCell>
+                    <TableCell align="center">{row.email}</TableCell>
+                    <TableCell align="center">{row.role == "0" ? "User" : "Admin"}</TableCell>
+                    <TableCell align="center">{row?.dob ? moment(row.dob).format("YYYY-MM-DD") : ''}</TableCell>
+                    <TableCell align="center">{row.address}</TableCell>
+                    <TableCell align="center">{row.phone}</TableCell>
+                    <TableCell align="center">
                       {row?.created_at ? moment(row.created_at).format("YYYY-MM-DD") : ''}
                     </TableCell>
-                    <TableCell align="right">
+                    <TableCell align="center">
                       {row?.updated_at ? moment(row.updated_at).format("YYYY-MM-DD") : ''}
                     </TableCell>
-                    <TableCell align="right">
+                    <TableCell align="right" key={row.id}>
                       <IconButton
-                        onClick={handleClick}
-                        onMouseOver={handleClick}
+                        aria-controls={`menu-icon-${row.id}`}
+                        aria-haspopup="true"
+                        onClick={(event) => handleClick(event, row.id.toString())}
                       >
                         <MoreVertTwoTone />
                       </IconButton>
                       <Menu
+                        id={`menu-${row.id}`}
                         anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
+                        open={selectedId? parseInt(selectedId) === row.id: false}
                         onClose={handleClose}
                       >
                         <MenuItem onClick={() => navigate(`/admin/edit/${row.id}`)}>Edit</MenuItem>

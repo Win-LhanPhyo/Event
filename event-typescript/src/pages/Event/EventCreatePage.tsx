@@ -1,40 +1,35 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import HeaderPage from '../../components/Header/HeaderPage';
 
-const CreatePage: React.FC = () => {
+
+const EventCreatePage: React.FC = () => {
   interface FormData {
-    name: string,
-    email: string,
-    password: string,
-    confirmPassword: string,
-    phone: string,
-    profile: string,
-    role: string,
-    address: string,
-    dob: string
+    event_name: string,
+    description: string,
+    from_date: string,
+    to_date: string,
+    from_time: string,
+    to_time: string,
+    image: string,
   }
   const initialFormData: FormData = {
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    phone: '',
-    profile: '',
-    role: '',
-    address: '',
-    dob: ''
+    event_name: '',
+    description: '',
+    from_date: '',
+    to_date: '',
+    from_time: '',
+    to_time: '',
+    image: '',
   };
   const [errors, setErrors]  = useState<{[key: string]: string}>({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    phone: '',
-    profile: '',
-    role: '',
-    address: '',
-    dob: ''
+    event_name: '',
+    description: '',
+    from_date: '',
+    to_date: '',
+    from_time: '',
+    to_time: '',
+    image: '',
   });
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -48,8 +43,8 @@ const CreatePage: React.FC = () => {
   const validateForm = () => {
     // Assuming newErrors is an object to store the error messages
     const newErrors: { [key: string]: string } = {}; 
-    const  requiredFields:string[] = [formData.name, formData.password, formData.confirmPassword, formData.phone, formData.profile, formData.role, formData.address, formData.dob];
-    const errorMessages: string[] = ['name', 'password', 'confirmPassword', 'phone', 'profile', 'role', 'address', 'dob']; 
+    const  requiredFields:string[] = [formData.event_name, formData.description, formData.from_date, formData.to_date, formData.from_time, formData.to_time,formData.image];
+    const errorMessages: string[] = ['event_name', 'description', 'from_date', 'to_date', 'from_time', 'to_time', 'image']; 
     for(let i=0; i<requiredFields.length; i++){
       if(requiredFields[i] === ''){
         for(let j=0; j<errorMessages.length; j++){
@@ -58,19 +53,7 @@ const CreatePage: React.FC = () => {
           }
         }
       }
-      if(requiredFields[1] !== requiredFields[2] && requiredFields[1] !== '') {
-        newErrors[errorMessages[1]] = 'Password and Confirm Password do not match.';
-      }
-      if(requiredFields[1] !== requiredFields[2] && requiredFields[2] !== '') {
-        newErrors[errorMessages[2]] = 'Passwords and Confirm Password do not match.';
-      }
     }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if(!emailRegex.test(formData.email)) {
-      newErrors.email = "Email is required.";
-    }
-
     setErrors(newErrors);
 
     return Object.keys(newErrors).length === 0;
@@ -115,26 +98,34 @@ const CreatePage: React.FC = () => {
   /**
    * handel submit event for form clicked event
    * @param event 
+   * 
    */
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>)  => {
     event.preventDefault();
     const isFormValid = validateForm();
+    const user = localStorage.getItem("user") || '';
+    const data = JSON.parse(user);
+    console.log(data);
     if(isFormValid) {
       const apiFormData = new FormData();
-      apiFormData.append("name", formData.name);
-      apiFormData.append("email", formData.email);
-      apiFormData.append("password", formData.password);
-      apiFormData.append("role", formData.role);
-      apiFormData.append("dob", formData.dob);
-      apiFormData.append("phone", formData.phone);
-      apiFormData.append("address", formData.address);
-      if (selectedFile) {
-        apiFormData.append("profile", selectedFile);
+      apiFormData.append("event_name", formData.event_name);
+      apiFormData.append("description", formData.description);
+      apiFormData.append("from_date", formData.from_date);
+      apiFormData.append("to_date", formData.to_date);
+      apiFormData.append("from_time", formData.from_time);
+      apiFormData.append("to_time", formData.to_time);
+      apiFormData.append("status", "new");
+      if(selectedFile) {
+        apiFormData.append("image", selectedFile);
       }
+     
 
-      axios.post('http://localhost:8000/api/user/create', apiFormData).then((response) => {
+      apiFormData.append("address", data.address);
+      apiFormData.append("approved_by_user_id", data.id);
+
+      axios.post('http://localhost:8000/api/event/create', apiFormData).then((response) => {
         if (response.status === 200) {
-          window.location.href = '/admin/users';
+          window.location.href = '/admin/events';
         }
       }).catch(error => {
         console.log(error);
@@ -201,8 +192,8 @@ const CreatePage: React.FC = () => {
     clearbutton: {
       padding: '10px 20px',
       border: 'none',
-      fontSize: "14px",
       borderRadius: '5px',
+      fontSize: "14px",
       background: '#d41616',
       color: '#fff',
       cursor: 'pointer',
@@ -223,111 +214,79 @@ const CreatePage: React.FC = () => {
       <HeaderPage />
       <form style={styles.create} onSubmit={handleSubmit}> 
         <div style={styles.createBox}>
-        <div style={styles.createHeader}>Create User</div>
+        <div style={styles.createHeader}>Create Event</div>
         <div style={styles.input}>
           <input 
             style={styles.inputStyle} 
-            placeholder="Enter your name" 
-            name="name" 
+            placeholder="Enter event name" 
+            name="event_name" 
             type="name" 
-            value={formData.name} 
+            value={formData.event_name} 
             onChange={handleChange}
           />
-          {errors.name && <span style={styles.errorMessage}>{errors.name}</span>}
-          <div style={styles.radioImageStyle}>
-            <label>
-              <input
-                type="radio"
-                name="role"
-                value="1"
-                checked={formData.role === '1'}
-                onChange={handleChange}
-              />
-              Admin
-            </label>
-            <label>
-              <input
-                name="role"
-                type="radio"
-                value="0"
-                checked={formData.role ==='0' ? true : false}
-                onChange={handleChange}
-              />
-              User
-            </label>
-          </div>
-          {errors.role && <span style={styles.errorMessage}>{errors.role}</span>}
+          {errors.event_name && <span style={styles.errorMessage}>{errors.event_name}</span>}
           <input
             style={styles.inputStyle} 
-            placeholder="Enter your email" 
-            name="email" 
-            type="email" 
-            value={formData.email} 
+            placeholder="Enter the description" 
+            name="description" 
+            type="description" 
+            value={formData.description} 
             onChange={handleChange}
           />
-          {errors.email && <span style={styles.errorMessage}>{errors.email}</span>}
+          {errors.description && <span style={styles.errorMessage}>{errors.description}</span>}
           <input
             style={styles.inputStyle}
-            placeholder="Enter your address"
-            name="address"
-            type="address"
-            value={formData.address}
-            onChange={handleChange}
-          />
-          {errors.address && <span style={styles.errorMessage}>{errors.address}</span>}
-          <input
-            style={styles.inputStyle}
-            placeholder="Enter your Date of Birth"
-            name="dob"
+            placeholder="Enter from date"
+            name="from_date"
             type="date"
-            value={formData.dob}
+            value={formData.from_date}
             onChange={handleChange}
           />
-          {errors.dob && <span style={styles.errorMessage}>{errors.dob}</span>}
+          {errors.from_date && <span style={styles.errorMessage}>{errors.from_date}</span>}
+          <input
+            style={styles.inputStyle}
+            placeholder="Enter to date"
+            name="to_date"
+            type="date"
+            value={formData.to_date}
+            onChange={handleChange}
+          />
+          {errors.to_date && <span style={styles.errorMessage}>{errors.to_date}</span>}
+          <input
+            style={styles.inputStyle}
+            placeholder="Enter from time"
+            name="from_time"
+            type="time"
+            value={formData.from_time}
+            onChange={handleChange}
+          />
+          {errors.from_time && <span style={styles.errorMessage}>{errors.from_time}</span>}
+          <input
+            style={styles.inputStyle}
+            placeholder="Enter to time"
+            name="to_time"
+            type="time"
+            value={formData.to_time}
+            onChange={handleChange}
+          />
+          {errors.to_time && <span style={styles.errorMessage}>{errors.to_time}</span>}
           <div style={styles.radioImageStyle}>
             { 
               previewImage && 
               <img 
                 src={previewImage.toString()} 
                 style={styles.previewImage} 
-                alt="profile"
+                alt="image"
               />
             }
             <input
               type="file"
-              name="profile"
-              value={formData.profile}
+              name="image"
+              value={formData.image}
               onChange={handleFileChange}
             />
           </div>
-          {errors.profile && <span style={styles.errorMessage}>{errors.profile}</span>}
-          <input
-            style={styles.inputStyle} 
-            placeholder="Enter your password" 
-            name="password"
-            type="password" 
-            value={formData.password} 
-            onChange={handleChange}
-          />
-          {errors.password && <span style={styles.errorMessage}>{errors.password}</span>}
-          <input
-            style={styles.inputStyle}
-            placeholder="Enter your confrim password"
-            name="confirmPassword"
-            type="password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-          />
-          {errors.confirmPassword && <span style={styles.errorMessage}>{errors.confirmPassword}</span>}
-          <input
-            style={styles.inputStyle}
-            placeholder="Enter your phone number"
-            name="phone"
-            type="tel"
-            value={formData.phone}
-            onChange={handleChange}
-          />
-          {errors.phone && <span style={styles.errorMessage}>{errors.phone}</span>}
+          {errors.image && <span style={styles.errorMessage}>{errors.image}</span>}
         </div>
         <div style={{display: "flex", justifyContent: "space-evenly", marginBottom: "20px"}}>
           <button type="reset" style={styles.clearbutton} onClick={handleClear}>Clear</button>
@@ -339,4 +298,4 @@ const CreatePage: React.FC = () => {
   )
 }  
 
-export default CreatePage;
+export default EventCreatePage;

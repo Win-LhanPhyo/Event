@@ -26,7 +26,8 @@ function HeaderPage() {
       display: 'flex',
       justifyContent: 'center',
       padding: '20px 0',
-      backgroundColor: '#b1b592'
+      backgroundColor: '#4da6ff',
+      borderBottom: '2px solid #a5aaaf69',
     },
     header: {
       width: '90%',
@@ -34,10 +35,12 @@ function HeaderPage() {
     headerText: {
       textDecoration: 'none',
       color: '#050202',
+      cursor: 'pointer',
     },
     logoutStyle: {
       marginLeft: '20px',
       textDecoration: 'none',
+      cursor: 'pointer',
     },
     registerStyle: {
       textDecoration: 'none',
@@ -51,6 +54,8 @@ function HeaderPage() {
     display: 'inline-block',
     width: '50%',
     float: 'left',
+    fontSize: '24px',
+    margin: '0',
   };
   const floatRight: CSSProperties = {
     width: '50%',
@@ -67,9 +72,9 @@ function HeaderPage() {
   return (
     <div style={styles.headerBox}>
       <div style={styles.header}>
-        <div style={floatLeft}>
+        <h1 style={floatLeft}>
           <a  onClick={() => navigate("/admin/events")} style={styles.headerText}>Foundation</a>
-        </div>
+        </h1>
         { 
           user.name && 
           <div style={floatRight}>

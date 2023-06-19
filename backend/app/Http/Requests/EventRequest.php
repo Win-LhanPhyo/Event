@@ -31,7 +31,6 @@ class EventRequest extends FormRequest
             'from_time' => ['required'],
             'to_time' => ['required'],
             'status' => ['required'],
-            'image' => ['required'],
             'address' => ['required', 'max:255'],
             'approved_by_user_id' => ['required'],
         ];

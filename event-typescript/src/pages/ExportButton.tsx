@@ -18,8 +18,8 @@ const ExportButton: React.FC<ExportButtonProps> = ({ data, filename }) => {
     const changeDateFormat = (data:any[]) => {
       return data.map((item) => ({
         ...item,
-        created_at: dayjs(item.created_at).format('YYYY/MM/DD'),
-        updated_at: dayjs(item.updated_at).format('YYYY/MM/DD')
+        created_at: dayjs(item.created_at).format('YYYY-MM-DD'),
+        updated_at: dayjs(item.updated_at).format('YYYY-MM-DD')
       }));
     }
 
@@ -55,16 +55,16 @@ const ExportButton: React.FC<ExportButtonProps> = ({ data, filename }) => {
       const rows = dataArray.map(item => Object.values(item).join(','));
       return `${header}\n${rows.join('\n')}`;
     };
-  
+   ;
     return (
       <span>
         <Button 
-          sx={{color: 'primary', border: '1px solid blue',  marginRight: '20px'}} 
+          sx={{color: '#fff', border: '2px solid #7cdaff',  marginRight: '20px', background: '#38a4cf9c'}} 
           onClick={exportToCSV}>
             Download CSV
         </Button>
         <Button 
-          sx={{color: 'primary', border: '1px solid blue',  marginRight: '20px'}} 
+          sx={{color: '#fff', border: '2px solid #7cdaff',  marginRight: '20px', background: '#38a4cf9c'}} 
           onClick={exportToExcel}>
             Download Excel
         </Button>

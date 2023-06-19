@@ -86,8 +86,10 @@ class EventController extends Controller
     public function createEvent(EventRequest $request)
     {
         info($request);
-        $imageName = time() . '.' . $request->image->extension();
-        $request->image->move(storage_path('app/public/events'), $imageName);
+        if ($request->hasFile('image')) {
+            $imageName = time() . '.' . $request->file('image')->extension();
+            $request->file('image')->move(storage_path('app/public/events'), $imageName);
+        }
         $event = Event::create([
             'event_name' => $request->event_name,
             'description' => $request->description,
@@ -114,6 +116,17 @@ class EventController extends Controller
         info('update');
         info($request);
         info('id'.$id);
+        $param = [
+            'event_name' => $request->event_name,
+            'description' => $request->description,
+            'from_date' => $request->from_date,
+            'to_date' => $request->to_date,
+            'from_time' => $request->from_time,
+            'to_time' => $request->to_time,
+            'status' => $request->status,
+            'address' => $request->address,
+            'approved_by_user_id' => $request->approved_by_user_id ?? 1,
+        ];
         if ($request->file('image')) {
           $event = Event::where('id',$id)->first();
           info($event->image);
@@ -124,19 +137,10 @@ class EventController extends Controller
           $imageName = time() . '.' . $request->file('image')->extension();
           // Storage Folder
           $request->image->move(storage_path('app/public/events/'), $imageName);
+
+          $param['image_name'] = $imageName;
         }
-        $event = Event::where('id', $id)->update([
-            'event_name' => $request->event_name,
-            'description' => $request->description,
-            'from_date' => $request->from_date,
-            'to_date' => $request->to_date,
-            'from_time' => $request->from_time,
-            'to_time' => $request->to_time,
-            'status' => $request->status,
-            'image' => $imageName,
-            'address' => $request->address,
-            'approved_by_user_id' => $request->approved_by_user_id ?? 1,
-        ]);
+        $event = Event::where('id', $id)->update($param);
         return response()->json(['message' => 'Event is successfully updated!', 'event' => $event]);
     }
 

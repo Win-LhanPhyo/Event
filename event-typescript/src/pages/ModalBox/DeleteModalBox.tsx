@@ -32,7 +32,8 @@ const ModalBox: React.FC<ModalBoxProps> = ({ isOpen, onClose, children }) => {
   };
 
   const containerStyle: CSSProperties = {
-    backgroundColor: 'rgb(177, 181, 146)',
+    backgroundColor: '#77acdd',
+    borderRadius: '15px',
     padding: '6px',
     width: '400px',
     textAlign: 'center',
@@ -48,7 +49,7 @@ const ModalBox: React.FC<ModalBoxProps> = ({ isOpen, onClose, children }) => {
       left: 0,
       width: '100%',
       height: '100%',
-      backgroundColor: 'rgb(107 107 107 / 50%)',
+      backgroundColor: '#4e7294',
     },
   }
   return (

@@ -76,7 +76,9 @@ let LoginPage: React.FC = () => {
     loginBox: {
         marginTop: '8rem',
         width: '450px',
-        background: '#b1b592',
+        background: '#4e7294',
+        color: '#cce6ff',
+        borderRadius: '8px',
     },
     loginHeader: {
         display: 'flex',
@@ -84,7 +86,7 @@ let LoginPage: React.FC = () => {
         alignItems: 'center',
         fontSize:' xx-large',
         fontWeight: 'bolder',
-        marginTop: '52px',
+        marginTop: '30px',
     },
     input: {
         padding: '20px 0 30px 0',
@@ -104,13 +106,18 @@ let LoginPage: React.FC = () => {
         padding: '10px 20px',
         border: 'none',
         borderRadius: '5px',
-        background: '#daef73',
+        fontSize: "14px",
+        background: '#32dc32b0',
+        color: '#fff',
         cursor: 'pointer',
     },
     errorMessage: {
       display: "block",
       fontSize: "14px",
       color: "#b41616",
+    },
+    registerText: {
+      color: '#ff6a6af0',
     }
   }
 
@@ -143,7 +150,7 @@ let LoginPage: React.FC = () => {
         </div>
         <div style={{display: "flex", justifyContent: "center", marginTop: "15px", marginBottom: "30px", fontSize: "13px"}}>
           <span>Don't Have Account?</span>
-          <a href="/admin/register">
+          <a href="/admin/register" style={styles.registerText}>
             Register
           </a>
         </div>

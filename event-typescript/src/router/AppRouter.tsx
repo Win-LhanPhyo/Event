@@ -7,6 +7,8 @@ import EditPage from "../pages/User/EditPage";
 import LoginPage from "../pages/Login/LoginPage";
 import HeaderPage from "../components/Header/HeaderPage";
 import RegisterPage from "../pages/Register/RegisterPage";
+import EventCreatePage from "../pages/Event/EventCreatePage";
+import EventEditPage from "../pages/Event/EventEditPage";
 
 const AppRouter = () => {
     return (
@@ -19,6 +21,8 @@ const AppRouter = () => {
                 <Route path="/admin/users" element={<UserPage/>} />
                 <Route path="/admin/create" element={<CreatePage/>} />
                 <Route path="/admin/edit/:id" element={<EditPage/>} />
+                <Route path="/admin/event/create" element={<EventCreatePage/>} />
+                <Route path="/admin/event/edit/:id" element={<EventEditPage/>} />
             </Routes>
         </Suspense>
     );

@@ -19,7 +19,7 @@ import HeaderPage from '../../components/Header/HeaderPage';
 import DeleteModalBox from '../ModalBox/DeleteModalBox';
 import { IconButton, Menu, MenuItem } from "@mui/material";
 import { MoreVertTwoTone } from "@mui/icons-material";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ImportButton from "./ImportButton";
 import ExportButton from '../ExportButton';
@@ -136,6 +136,9 @@ const EventPage:React.FC<{
   const changeStatus = (id: string | number, status: string) => {
     let preEventList = [...events.data];
     const index = preEventList.findIndex((event: { id: string | number; }) => event.id === id);
+
+    const event_list_data = preEventList.filter(event =>event.id === id)[0];
+    console.log(event_list_data);
     
     preEventList[index] = {
       ...preEventList[index],
@@ -164,7 +167,34 @@ const EventPage:React.FC<{
         })
       }
     })
+
+    console.log(status);
+    if(status == 'approved'){
+      sentLineMessage(event_list_data);
+    }
   };
+
+  const sentLineMessage = (event_list_data: { id: string | Blob; address: string | Blob; approved_by_user_id: string | Blob; description: string | Blob; dob: string | Blob; event_name: string | Blob; from_date: string | Blob; from_time: string | Blob; image: string | Blob; phone: string | Blob; profile: string | Blob; user_address: string | Blob; username: string | Blob; }) =>{
+    let formData = new FormData();
+    formData.append('id', event_list_data.id);
+    formData.append('address', event_list_data.address);
+    formData.append('approved_by_user_id', event_list_data.approved_by_user_id);
+    formData.append('description', event_list_data.description);
+    formData.append('dob', event_list_data.dob);
+    formData.append('event_name', event_list_data.event_name);
+    formData.append('from_date', event_list_data.from_date);
+    formData.append('from_time', event_list_data.from_time);
+    formData.append('image', event_list_data.image);
+    formData.append('phone', event_list_data.phone);
+    formData.append('profile', event_list_data.profile);
+    formData.append('user_address', event_list_data.user_address);
+    formData.append('username', event_list_data.username);
+    axios.post('http://localhost:8000/api/line/webhook/message',formData).then((response) => {
+      console.log('line message send successfully');
+    }).catch((error) => {
+      console.log(`error message ${error}`);
+    });
+  }
 
   const styles = {
     modalScroll: {
@@ -185,7 +215,10 @@ const EventPage:React.FC<{
       color: '#e6f2ff',
       background: '#1a8cff',
       cursor: 'pointer',
-    },     
+    },
+    imageStyle: {
+      width: '50px',
+    }
   }
 
   return (
@@ -202,7 +235,7 @@ const EventPage:React.FC<{
                   <ImportButton />
                 </div>
                 <div>
-                  <ExportButton data={data} filename="exported_data"/>
+                  <ExportButton data={data} filename="eventLists_data"/>
                   <Button sx={{color: 'white', border: '2px solid #52ea52', background: '#35c4358c'}} onClick={() => navigate('/admin/event/create')}>Create</Button>
                 </div>
               </Box>
@@ -211,9 +244,10 @@ const EventPage:React.FC<{
                     <TableHead>
                       <StyledTableRow sx={{backgroundColor: '#80bfff'}}>
                         <TableCell>ID</TableCell>
+                        <TableCell align="center" color='#e6f2ff'>Image</TableCell>
                         <TableCell align="center" color='#e6f2ff'>Event Name</TableCell>
                         <TableCell align="center" color='#e6f2ff'>Description</TableCell>
-                        <TableCell align="center" color='#e6f2ff'>From ~ To</TableCell>
+                        <TableCell align="center" color='#e6f2ff'>Address</TableCell>
                         <TableCell align="center" colSpan={2}></TableCell>
                       </StyledTableRow>
                     </TableHead>
@@ -223,10 +257,29 @@ const EventPage:React.FC<{
                           <TableCell component="th" scope="row">
                             {row.id}
                           </TableCell>
-                          <TableCell align="center">{row.event_name}</TableCell>
+                          <TableCell align="center" component="th" scope="row">
+                            <img
+                              src={
+                                "http://localhost:8000/" +
+                                row.image +
+                                "?auto=format&fit=crop&w=800"
+                              }
+                              srcSet={
+                                "http://localhost:8000/" +
+                                row.image +
+                                "?auto=format&fit=crop&w=800&dpr=2 2x"
+                              }
+                              alt={row.event_name}
+                              loading="lazy"
+                              style={styles.imageStyle}
+                            />
+                          </TableCell>
+                          <TableCell align="center">
+                            <Link to={`/admin/event/edit/${row.id}`} style={{ color: '#393939'}}>{row.event_name}</Link>
+                          </TableCell>
                           <TableCell align="center">{row.description}</TableCell>
                           <TableCell align="center">
-                            {row?.from_date? moment(row.from_date).format("YYYY-MM-DD") : ''}
+                            {row.address}
                           </TableCell>
                           <TableCell align="center">
                             {(row.status === 'new' || row.status === 'rejected') &&
@@ -298,7 +351,3 @@ const EventPage:React.FC<{
 };
 
 export default EventPage;
-
-function strtotime(from_date: Date): any {
-  throw new Error('Function not implemented.');
-}

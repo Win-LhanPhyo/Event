@@ -19,8 +19,8 @@ const AppRouter = () => {
                 <Route path="/admin/login" element={<LoginPage/>} />
                 <Route path="/admin/events" element={<EventPage/>} />
                 <Route path="/admin/users" element={<UserPage/>} />
-                <Route path="/admin/create" element={<CreatePage/>} />
-                <Route path="/admin/edit/:id" element={<EditPage/>} />
+                <Route path="/admin/user/create" element={<CreatePage/>} />
+                <Route path="/admin/user/edit/:id" element={<EditPage/>} />
                 <Route path="/admin/event/create" element={<EventCreatePage/>} />
                 <Route path="/admin/event/edit/:id" element={<EventEditPage/>} />
             </Routes>

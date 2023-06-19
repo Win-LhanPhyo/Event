@@ -1,3 +1,4 @@
+import { TextField } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
 import HeaderPage from '../../components/Header/HeaderPage';
@@ -154,8 +155,8 @@ const CreatePage: React.FC = () => {
     },
     createBox: {
         marginTop: '1rem',
-        width: '450px',
-        background: '#8ab1d682',
+        width: '500px',
+        background: '#e0eaff',
         color: '#cce6ff',
         borderRadius: '8px',
     },
@@ -166,28 +167,27 @@ const CreatePage: React.FC = () => {
         fontSize:' xx-large',
         fontWeight: 'bolder',
         marginTop: '30px',
+        color: '#000'
+    },
+    labelStyle: {
+      color: '#4f4c4c',
     },
     input: {
         padding: '20px 0 30px 0',
         margin: "0 auto",
         width: "90%",
-    }, 
+    },
     inputStyle: {
-        border: 'none',
-        borderRadius: '5px',
-        padding: '10px',
-        width: '95%',
-        display: 'block',
+        display: "flex",
+        alignItem: 'center',
         marginBottom: "5px",
-        marginTop: "30px",
+        marginTop: "25px",
     },
     radioImageStyle: {
-        border: 'none',
-        borderRadius: '5px',
-        width: '95%',
-        display: 'block',
+        display: "flex",
         marginBottom: "5px",
-        marginTop: "30px",
+        marginTop: "25px",
+        width: "100%",
     }, 
     submitButton: {
       padding: '10px 20px',
@@ -201,21 +201,22 @@ const CreatePage: React.FC = () => {
     clearbutton: {
       padding: '10px 20px',
       border: 'none',
-      fontSize: "14px",
       borderRadius: '5px',
+      fontSize: "14px",
       background: '#d41616',
       color: '#fff',
       cursor: 'pointer',
     },
     previewImage: {
       with: "200px",
-      height: "200px"
+      height: "200px",
+      marginTop: "20px",
     },
-      errorMessage: {
-        display: "block",
-        fontSize: "14px",
-        color: "#b41616",
-      }
+    errorMessage: {
+      display: "block",
+      fontSize: "14px",
+      color: "#b41616",
+    }
   }
 
   return (
@@ -225,9 +226,9 @@ const CreatePage: React.FC = () => {
         <div style={styles.createBox}>
         <div style={styles.createHeader}>Create User</div>
         <div style={styles.input}>
-          <input 
-            style={styles.inputStyle} 
-            placeholder="Enter your name" 
+          <TextField
+            label="Enter user name" 
+            style={styles.inputStyle}
             name="name" 
             type="name" 
             value={formData.name} 
@@ -235,7 +236,7 @@ const CreatePage: React.FC = () => {
           />
           {errors.name && <span style={styles.errorMessage}>{errors.name}</span>}
           <div style={styles.radioImageStyle}>
-            <label>
+            <label style={styles.labelStyle}>
               <input
                 type="radio"
                 name="role"
@@ -245,7 +246,7 @@ const CreatePage: React.FC = () => {
               />
               Admin
             </label>
-            <label>
+            <label style={styles.labelStyle}>
               <input
                 name="role"
                 type="radio"
@@ -257,34 +258,37 @@ const CreatePage: React.FC = () => {
             </label>
           </div>
           {errors.role && <span style={styles.errorMessage}>{errors.role}</span>}
-          <input
-            style={styles.inputStyle} 
-            placeholder="Enter your email" 
+          <TextField
+            label="Enter user email"
+            style={styles.inputStyle}
             name="email" 
             type="email" 
             value={formData.email} 
             onChange={handleChange}
           />
           {errors.email && <span style={styles.errorMessage}>{errors.email}</span>}
-          <input
+          <TextField
+            label="Enter user address"
             style={styles.inputStyle}
-            placeholder="Enter your address"
             name="address"
             type="address"
             value={formData.address}
             onChange={handleChange}
           />
           {errors.address && <span style={styles.errorMessage}>{errors.address}</span>}
-          <input
+          <TextField
+            label="Select user Date of Birth"
             style={styles.inputStyle}
-            placeholder="Enter your Date of Birth"
             name="dob"
             type="date"
             value={formData.dob}
             onChange={handleChange}
+            InputLabelProps={{
+              shrink: true,
+            }}
           />
           {errors.dob && <span style={styles.errorMessage}>{errors.dob}</span>}
-          <div style={styles.radioImageStyle}>
+          <div>
             { 
               previewImage && 
               <img 
@@ -293,35 +297,40 @@ const CreatePage: React.FC = () => {
                 alt="profile"
               />
             }
-            <input
+            <TextField
+              label="Select From Date"
               type="file"
               name="profile"
               value={formData.profile}
+              style={styles.radioImageStyle}
               onChange={handleFileChange}
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
           </div>
           {errors.profile && <span style={styles.errorMessage}>{errors.profile}</span>}
-          <input
-            style={styles.inputStyle} 
-            placeholder="Enter your password" 
+          <TextField
+            label="Enter user password"
+            style={styles.inputStyle}
             name="password"
             type="password" 
             value={formData.password} 
             onChange={handleChange}
           />
           {errors.password && <span style={styles.errorMessage}>{errors.password}</span>}
-          <input
+          <TextField
+            label="Enter user confrim password"
             style={styles.inputStyle}
-            placeholder="Enter your confrim password"
             name="confirmPassword"
             type="password"
             value={formData.confirmPassword}
             onChange={handleChange}
           />
           {errors.confirmPassword && <span style={styles.errorMessage}>{errors.confirmPassword}</span>}
-          <input
+          <TextField
+            label="Enter user phone number"
             style={styles.inputStyle}
-            placeholder="Enter your phone number"
             name="phone"
             type="tel"
             value={formData.phone}

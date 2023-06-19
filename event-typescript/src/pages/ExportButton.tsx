@@ -18,6 +18,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({ data, filename }) => {
     const changeDateFormat = (data:any[]) => {
       return data.map((item) => ({
         ...item,
+        role: item.role.toString() === '0' ? 'User' : 'Admin',
         created_at: dayjs(item.created_at).format('YYYY-MM-DD'),
         updated_at: dayjs(item.updated_at).format('YYYY-MM-DD')
       }));

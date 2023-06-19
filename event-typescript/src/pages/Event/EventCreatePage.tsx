@@ -1,5 +1,6 @@
+import { TextField } from "@mui/material";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import HeaderPage from '../../components/Header/HeaderPage';
 
 
@@ -11,6 +12,7 @@ const EventCreatePage: React.FC = () => {
     to_date: string,
     from_time: string,
     to_time: string,
+    address: '',
     image: string,
   }
   const initialFormData: FormData = {
@@ -20,6 +22,7 @@ const EventCreatePage: React.FC = () => {
     to_date: '',
     from_time: '',
     to_time: '',
+    address: '',
     image: '',
   };
   const [errors, setErrors]  = useState<{[key: string]: string}>({
@@ -29,6 +32,7 @@ const EventCreatePage: React.FC = () => {
     to_date: '',
     from_time: '',
     to_time: '',
+    address: '',
     image: '',
   });
 
@@ -43,8 +47,8 @@ const EventCreatePage: React.FC = () => {
   const validateForm = () => {
     // Assuming newErrors is an object to store the error messages
     const newErrors: { [key: string]: string } = {}; 
-    const  requiredFields:string[] = [formData.event_name, formData.description, formData.from_date, formData.to_date, formData.from_time, formData.to_time,formData.image];
-    const errorMessages: string[] = ['event_name', 'description', 'from_date', 'to_date', 'from_time', 'to_time', 'image']; 
+    const  requiredFields:string[] = [formData.event_name, formData.description, formData.from_date, formData.to_date, formData.from_time, formData.to_time,formData.address, formData.image];
+    const errorMessages: string[] = ['event_name', 'description', 'from_date', 'to_date', 'from_time', 'to_time','address', 'image']; 
     for(let i=0; i<requiredFields.length; i++){
       if(requiredFields[i] === ''){
         for(let j=0; j<errorMessages.length; j++){
@@ -114,6 +118,7 @@ const EventCreatePage: React.FC = () => {
       apiFormData.append("to_date", formData.to_date);
       apiFormData.append("from_time", formData.from_time);
       apiFormData.append("to_time", formData.to_time);
+      apiFormData.append("address", formData.address);
       apiFormData.append("status", "new");
       if(selectedFile) {
         apiFormData.append("image", selectedFile);
@@ -145,8 +150,8 @@ const EventCreatePage: React.FC = () => {
     },
     createBox: {
         marginTop: '1rem',
-        width: '450px',
-        background: '#8ab1d682',
+        width: '500px',
+        background: '#e0eaff',
         color: '#cce6ff',
         borderRadius: '8px',
     },
@@ -157,6 +162,7 @@ const EventCreatePage: React.FC = () => {
         fontSize:' xx-large',
         fontWeight: 'bolder',
         marginTop: '30px',
+        color: '#000'
     },
     input: {
         padding: '20px 0 30px 0',
@@ -164,21 +170,16 @@ const EventCreatePage: React.FC = () => {
         width: "90%",
     }, 
     inputStyle: {
-        border: 'none',
-        borderRadius: '5px',
-        padding: '10px',
-        width: '95%',
-        display: 'block',
+        display: "flex",
+        alignItem: 'center',
         marginBottom: "5px",
-        marginTop: "30px",
+        marginTop: "25px",
     },
     radioImageStyle: {
-        border: 'none',
-        borderRadius: '5px',
-        width: '95%',
-        display: 'block',
+        display: "flex",
         marginBottom: "5px",
-        marginTop: "30px",
+        marginTop: "25px",
+        width: "100%",
     }, 
     submitButton: {
       padding: '10px 20px',
@@ -200,13 +201,14 @@ const EventCreatePage: React.FC = () => {
     },
     previewImage: {
       with: "200px",
-      height: "200px"
+      height: "200px",
+      marginTop: "20px",
     },
-      errorMessage: {
-        display: "block",
-        fontSize: "14px",
-        color: "#b41616",
-      }
+    errorMessage: {
+      display: "block",
+      fontSize: "14px",
+      color: "#b41616",
+    }
   }
 
   return (
@@ -216,61 +218,82 @@ const EventCreatePage: React.FC = () => {
         <div style={styles.createBox}>
         <div style={styles.createHeader}>Create Event</div>
         <div style={styles.input}>
-          <input 
-            style={styles.inputStyle} 
-            placeholder="Enter event name" 
-            name="event_name" 
+          <TextField
+            label="Enter event name"
+            name="event_name"
+            style={styles.inputStyle}
             type="name" 
             value={formData.event_name} 
             onChange={handleChange}
           />
           {errors.event_name && <span style={styles.errorMessage}>{errors.event_name}</span>}
-          <input
-            style={styles.inputStyle} 
-            placeholder="Enter the description" 
+          <TextField
+            label="Enter event description"
+            style={styles.inputStyle}
             name="description" 
             type="description" 
             value={formData.description} 
             onChange={handleChange}
           />
           {errors.description && <span style={styles.errorMessage}>{errors.description}</span>}
-          <input
-            style={styles.inputStyle}
-            placeholder="Enter from date"
-            name="from_date"
-            type="date"
-            value={formData.from_date}
-            onChange={handleChange}
-          />
+           <TextField
+              label="Select From Date"
+              style={styles.inputStyle}
+              type="date"
+              name="from_date"
+              value={formData.from_date}
+              onChange={handleChange}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
           {errors.from_date && <span style={styles.errorMessage}>{errors.from_date}</span>}
-          <input
+          <TextField
+            label="Select To Date"
             style={styles.inputStyle}
-            placeholder="Enter to date"
-            name="to_date"
             type="date"
+            name="to_date"
             value={formData.to_date}
             onChange={handleChange}
+            InputLabelProps={{
+              shrink: true,
+            }}
           />
           {errors.to_date && <span style={styles.errorMessage}>{errors.to_date}</span>}
-          <input
+          <TextField
+            label="Select From Time"
             style={styles.inputStyle}
-            placeholder="Enter from time"
-            name="from_time"
             type="time"
+            name="from_time"
             value={formData.from_time}
             onChange={handleChange}
+            InputLabelProps={{
+              shrink: true,
+            }}
           />
           {errors.from_time && <span style={styles.errorMessage}>{errors.from_time}</span>}
-          <input
+          <TextField
+            label="Select From Time"
             style={styles.inputStyle}
-            placeholder="Enter to time"
             name="to_time"
             type="time"
             value={formData.to_time}
             onChange={handleChange}
+            InputLabelProps={{
+              shrink: true,
+            }}
           />
           {errors.to_time && <span style={styles.errorMessage}>{errors.to_time}</span>}
-          <div style={styles.radioImageStyle}>
+          <TextField
+            label="Select From address"
+            style={styles.inputStyle}
+            name="address"
+            type="address"
+            value={formData.address}
+            onChange={handleChange}
+          />
+          {errors.address && <span style={styles.errorMessage}>{errors.address}</span>}
+          <div>
             { 
               previewImage && 
               <img 
@@ -279,11 +302,16 @@ const EventCreatePage: React.FC = () => {
                 alt="image"
               />
             }
-            <input
+            <TextField
+              label="Select the image"
+              style={styles.radioImageStyle}
               type="file"
               name="image"
               value={formData.image}
               onChange={handleFileChange}
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
           </div>
           {errors.image && <span style={styles.errorMessage}>{errors.image}</span>}

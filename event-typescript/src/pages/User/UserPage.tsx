@@ -25,7 +25,7 @@ import ExportButton from '../ExportButton';
 import ImportButton from "./ImportButton";
 import HeaderPage from '../../components/Header/HeaderPage';
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
@@ -155,8 +155,8 @@ const UserPage: React.FC<{
               <ImportButton />
             </div>
             <div>
-              <ExportButton data={data} filename="exported_data"/>
-              <Button sx={{color: 'white', border: '2px solid #52ea52', background: '#35c4358c'}} onClick={() => navigate('/admin/create')}>Create</Button>
+              <ExportButton data={data} filename="userLists_data"/>
+              <Button sx={{color: 'white', border: '2px solid #52ea52', background: '#35c4358c'}} onClick={() => navigate('/admin/user/create')}>Create</Button>
             </div>
           </Box>
           <TableContainer component={Paper}>
@@ -202,7 +202,9 @@ const UserPage: React.FC<{
                         className="user-img"
                       />
                     </TableCell>
-                    <TableCell align="center">{row.name}</TableCell>
+                    <TableCell align="center" color="#393939">
+                      <Link to={`/admin/user/edit/${row.id}`} style={{ color: '#393939'}}>{row.name}</Link>
+                    </TableCell>
                     <TableCell align="center">{row.email}</TableCell>
                     <TableCell align="center">{row.role == "0" ? "User" : "Admin"}</TableCell>
                     <TableCell align="center">{row?.dob ? moment(row.dob).format("YYYY-MM-DD") : ''}</TableCell>
@@ -228,7 +230,7 @@ const UserPage: React.FC<{
                         open={selectedId? parseInt(selectedId) === row.id: false}
                         onClose={handleClose}
                       >
-                        <MenuItem onClick={() => navigate(`/admin/edit/${row.id}`)}>Edit</MenuItem>
+                        <MenuItem onClick={() => navigate(`/admin/user/edit/${row.id}`)}>Edit</MenuItem>
                         <MenuItem onClick={() => handleDeleteClick(row)}>Delete</MenuItem>
                       </Menu>
                     </TableCell>

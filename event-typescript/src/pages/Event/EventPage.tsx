@@ -222,6 +222,8 @@ const EventPage:React.FC<{
           }}>
             <Box sx={{ px: 5, py: 5 }}>
               <Box sx={{pb: 3, textAlign: 'end', display: 'flex', justifyContent: 'space-between'}}>
+                
+                <div>
                   <ImportButton />
                 </div>
                 <div>

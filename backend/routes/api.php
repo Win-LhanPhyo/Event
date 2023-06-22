@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Event\EventController;
 use App\Http\Controllers\ForgotPassword\ForgotPasswordController;
 use App\Http\Controllers\LineWebhookController;
+use App\Http\Controllers\SkypeMessageController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -35,6 +36,9 @@ Route::post('reset-password/{token}', [ForgotPasswordController::class, 'submitR
 
 //line api
 Route::post('/line/webhook/message', [LineWebhookController::class, 'message'])->name('line.webhook.message');
+
+// skype api
+Route::post('/skype/message', [SkypeMessageController::class, 'message'])->name('skype.message');
 
 // user
 Route::group(['prefix' => 'user'], function () {

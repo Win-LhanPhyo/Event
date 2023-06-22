@@ -11,7 +11,6 @@ import { useRecoilState } from "recoil";
 import { userState } from "../../redux/store/User/user";
 import { ThemeProvider } from "@mui/material/styles";
 import { eventTheme } from "../../entries/theme";
-import Pagination from "@mui/material/Pagination";
 import Box from "@mui/material/Box";
 import { User } from "../../redux/domain/userList";
 import "../../App.css";
@@ -26,6 +25,8 @@ import ImportButton from "./ImportButton";
 import HeaderPage from '../../components/Header/HeaderPage';
 import axios from "axios";
 import { Link, useNavigate } from 'react-router-dom';
+import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
+import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
@@ -39,20 +40,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const style = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 500,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  borderRadius: [0, '8px', '8px', 0],
-  boxShadow: 24,
-  p: 4,
-};
-
-
 /* End Modal Box */
 
 const UserPage: React.FC<{
@@ -63,6 +50,15 @@ const UserPage: React.FC<{
   const [ selectedId, setSelectedId] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  const pageNums = [1, 2, 3, 4, 5];
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(users.data.length / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = users.data.slice(startIndex, endIndex);
   /**
    * icon button click show edit modal small box
    * @param event
@@ -137,7 +133,11 @@ const UserPage: React.FC<{
       color: '#e6f2ff',
       background: '#1a8cff',
       cursor: 'pointer',
-    },     
+    },
+    paginateStyle: {
+      padding: '4px 10px 0 10px',
+      border: '1px solid #bdbdbe',
+    },
   }
   return (
     <ThemeProvider theme={eventTheme}>
@@ -177,7 +177,7 @@ const UserPage: React.FC<{
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                {users.data.map((row: User) => (
+                {currentData.map((row: User) => (
                   <TableRow
                     key={row.id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -246,7 +246,27 @@ const UserPage: React.FC<{
               justifyContent: "center",
             }}
           >
-            <Pagination count={11} shape="rounded" />
+            <button style={styles.paginateStyle} onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+              <KeyboardDoubleArrowLeftIcon/>
+            </button>
+            {pageNums.map((pageNum: number, idx: React.Key | null | undefined) => (
+              pageNum <= totalPages ? (
+                <button
+                  onClick={() => setCurrentPage(pageNum)} 
+                  key={idx} 
+                  disabled={isNaN(pageNum)}
+                  style={{
+                    ...styles.paginateStyle,
+                    backgroundColor: currentPage === pageNum ? '#7baee6ba' : ''
+                  }}
+                >
+                  {pageNum}
+                </button>
+              ) : null
+            ))}
+            <button style={styles.paginateStyle} onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
+              <KeyboardDoubleArrowRightIcon/>
+            </button>
           </Box>
         </Box>
       </Box>

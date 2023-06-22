@@ -14,7 +14,8 @@ import { Event } from '../../redux/domain/eventList';
 import Box from '@mui/material/Box';
 import { Button, ThemeProvider } from "@mui/material";
 import { eventTheme } from '../../entries/theme';
-import Pagination from '@mui/material/Pagination';
+import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
+import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import HeaderPage from '../../components/Header/HeaderPage';
 import DeleteModalBox from '../ModalBox/DeleteModalBox';
 import { IconButton, Menu, MenuItem } from "@mui/material";
@@ -25,7 +26,6 @@ import ImportButton from "./ImportButton";
 import ExportButton from '../ExportButton';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
-import moment from 'moment';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
@@ -50,39 +50,18 @@ const EventPage:React.FC<{
   const [isDeleteModal, setIsDeleteModal] = React.useState(false);
   /* Start Create Modal Box */
   const [selectedUser, setSelectedUser] = React.useState<Event | null>(null);
-  const [paginationData, setPaginationData] = React.useState({
-    from: 1,
-    last_page: 1,
-    per_page: 1
-  });
 
-  const mounted = React.useRef(false);
   const data = events.data;
 
-  React.useEffect(() => {
-    if (!mounted.current) {
-      fetchEvents();
-    }
-    mounted.current = true;
-    return () => {};
-  }, []);
+  const pageNums = [1, 2, 3, 4, 5];
 
-  const fetchEvents = async (param={},page=1) => {
-    param = {
-      ...param,
-      limit: 5,
-      page
-    };
-    await axios.get('http://localhost:8000/api/event/list', { params: param }).then(response => {
-      let data = response.data.data;
-      console.log(data);
-      setPaginationData({
-        from: response.data.from,
-        last_page: response.data.last_page,
-        per_page: response.data.per_page
-      });
-    })
-  }
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = data.slice(startIndex, endIndex);
   
   /**
    * icon button click show edit modal small box
@@ -138,7 +117,6 @@ const EventPage:React.FC<{
     const index = preEventList.findIndex((event: { id: string | number; }) => event.id === id);
 
     const event_list_data = preEventList.filter(event =>event.id === id)[0];
-    console.log(event_list_data);
     
     preEventList[index] = {
       ...preEventList[index],
@@ -167,34 +145,43 @@ const EventPage:React.FC<{
         })
       }
     })
-
-    console.log(status);
     if(status == 'approved'){
-      sentLineMessage(event_list_data);
+      // To send message to Line 
+      // sentLineMessage(event_list_data);
+      console.log(status)
+      // To Send Message to Skype
+      const message = 'Your request has been approved!';
+      sendMessageToSkype(message);
     }
   };
 
-  const sentLineMessage = (event_list_data: { id: string | Blob; address: string | Blob; approved_by_user_id: string | Blob; description: string | Blob; dob: string | Blob; event_name: string | Blob; from_date: string | Blob; from_time: string | Blob; image: string | Blob; phone: string | Blob; profile: string | Blob; user_address: string | Blob; username: string | Blob; }) =>{
+  const sentLineMessage = (event_list_data: { id: string | Blob; address: string | Blob; approved_by_user_id: string | Blob; description: string | Blob; event_name: string | Blob; from_date: string | Blob; from_time: string | Blob; image: string | Blob; phone: string | Blob; }) =>{
     let formData = new FormData();
     formData.append('id', event_list_data.id);
     formData.append('address', event_list_data.address);
     formData.append('approved_by_user_id', event_list_data.approved_by_user_id);
     formData.append('description', event_list_data.description);
-    formData.append('dob', event_list_data.dob);
     formData.append('event_name', event_list_data.event_name);
     formData.append('from_date', event_list_data.from_date);
     formData.append('from_time', event_list_data.from_time);
     formData.append('image', event_list_data.image);
-    formData.append('phone', event_list_data.phone);
-    formData.append('profile', event_list_data.profile);
-    formData.append('user_address', event_list_data.user_address);
-    formData.append('username', event_list_data.username);
-    axios.post('http://localhost:8000/api/line/webhook/message',formData).then((response) => {
+    axios.post('http://localhost:8000/api/line/webhook/message',formData).then(() => {
       console.log('line message send successfully');
     }).catch((error) => {
       console.log(`error message ${error}`);
     });
-  }
+  };
+
+  // Function to send a message
+  const sendMessageToSkype = (message: string) => {
+    // Initialize the Skype SDK
+
+    axios.post('http://localhost:8000/api/skype/message', {message}).then(() => {
+      console.log('Skype message send successfully');
+    }).catch((error) => {
+      console.log(`error message ${error}`);
+    });
+  };
 
   const styles = {
     modalScroll: {
@@ -218,6 +205,10 @@ const EventPage:React.FC<{
     },
     imageStyle: {
       width: '50px',
+    },
+    paginateStyle: {
+      padding: '4px 10px 0 10px',
+      border: '1px solid #bdbdbe',
     }
   }
 
@@ -231,7 +222,6 @@ const EventPage:React.FC<{
           }}>
             <Box sx={{ px: 5, py: 5 }}>
               <Box sx={{pb: 3, textAlign: 'end', display: 'flex', justifyContent: 'space-between'}}>
-                <div>
                   <ImportButton />
                 </div>
                 <div>
@@ -248,79 +238,86 @@ const EventPage:React.FC<{
                         <TableCell align="center" color='#e6f2ff'>Event Name</TableCell>
                         <TableCell align="center" color='#e6f2ff'>Description</TableCell>
                         <TableCell align="center" color='#e6f2ff'>Address</TableCell>
-                        <TableCell align="center" colSpan={2}></TableCell>
+                        <TableCell align="center" color='#e6f2ff'>Feedback</TableCell>
+                        <TableCell align="center" color='#e6f2ff'></TableCell>
                       </StyledTableRow>
                     </TableHead>
                     <TableBody>
-                      {events?.data.map((row: Event) => (
-                        <TableRow key={row.id}>
-                          <TableCell component="th" scope="row">
-                            {row.id}
-                          </TableCell>
-                          <TableCell align="center" component="th" scope="row">
-                            <img
-                              src={
-                                "http://localhost:8000/" +
-                                row.image +
-                                "?auto=format&fit=crop&w=800"
-                              }
-                              srcSet={
-                                "http://localhost:8000/" +
-                                row.image +
-                                "?auto=format&fit=crop&w=800&dpr=2 2x"
-                              }
-                              alt={row.event_name}
-                              loading="lazy"
-                              style={styles.imageStyle}
-                            />
-                          </TableCell>
-                          <TableCell align="center">
-                            <Link to={`/admin/event/edit/${row.id}`} style={{ color: '#393939'}}>{row.event_name}</Link>
-                          </TableCell>
-                          <TableCell align="center">{row.description}</TableCell>
-                          <TableCell align="center">
-                            {row.address}
-                          </TableCell>
-                          <TableCell align="center">
-                            {(row.status === 'new' || row.status === 'rejected') &&
-                              <IconButton 
-                                sx={{ color: '#0072ff'}}
-                                onClick={() =>
-                                  changeStatus(row.id, 'approved')}
-                              >
-                                <ThumbUpIcon/>
-                              </IconButton>
+                    {currentData.map((row: any) => (
+                      <TableRow key={row.id}>
+                        <TableCell component="th" scope="row">
+                          {row.id}
+                        </TableCell>
+                        <TableCell align="center" component="th" scope="row">
+                          <img
+                            src={
+                              "http://localhost:8000/" +
+                              row.image +
+                              "?auto=format&fit=crop&w=800"
                             }
-                            {(row.status === 'new' || row.status === 'approved') &&
-                              <IconButton
-                                sx={{ color: '#d22727'}}
-                                onClick={() =>
-                                changeStatus(row.id, 'rejected')}
-                              >
-                                <ThumbDownIcon/>
-                              </IconButton>
+                            srcSet={
+                              "http://localhost:8000/" +
+                              row.image +
+                              "?auto=format&fit=crop&w=800&dpr=2 2x"
                             }
-                          </TableCell>
-                          <TableCell align="right" key={row.id}> 
+                            alt={row.event_name}
+                            loading="lazy"
+                            style={styles.imageStyle}
+                          />
+                        </TableCell>
+                        <TableCell align="center">
+                          <Link to={`/admin/event/edit/${row.id}`} style={{ color: '#393939'}}>{row.event_name}</Link>
+                        </TableCell>
+                        <TableCell align="center">{row.description}</TableCell>
+                        <TableCell align="center">
+                          {row.address}
+                        </TableCell>
+                        <TableCell align="center">
+                          {(row.status === 'new' || row.status === 'rejected') &&
+                            <IconButton 
+                              sx={{ color: '#0072ff'}}
+                              onClick={() =>
+                                changeStatus(row.id, 'approved')}
+                            >
+                              <ThumbUpIcon/> 
+                            </IconButton> ||
+                            <a href='skype:live:.cid.1ed9002627da4bb3?chat'>Chat</a>
+                          }
+                          {(row.status === 'new' || row.status === 'approved') &&
                             <IconButton
-                              aria-controls={`menu-${row.id}`}
-                              aria-handleSubmit="true"
-                              onClick={(event) => handleClick(event, row?.id.toString())}
+                              sx={{ color: '#d22727'}}
+                              onClick={() =>
+                              changeStatus(row.id, 'rejected')}
                             >
-                              <MoreVertTwoTone />
-                            </IconButton>
-                            <Menu
-                              id={`menu-${row.id}`}
-                              anchorEl={anchorEl}
-                              open={selectedId ? parseInt(selectedId) === row.id : false}
-                              onClose={handleClose}
-                            >
-                              <MenuItem onClick={() => navigate(`/admin/event/edit/${row.id}`)}>Edit</MenuItem>
-                              <MenuItem onClick={() => handleDeleteClick(row)}>Delete</MenuItem>
-                            </Menu>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                              <ThumbDownIcon/>
+                            </IconButton> 
+                          }
+                          {/* {
+                            (chat == true && row.status === 'approved') &&
+                            <a href='skype:live:.cid.1ed9002627da4bb3?chat'>Chat</a>
+                          } */}
+                          
+                        </TableCell>
+                        <TableCell align="right" key={row.id}> 
+                          <IconButton
+                            aria-controls={`menu-${row.id}`}
+                            aria-handleSubmit="true"
+                            onClick={(event) => handleClick(event, row?.id.toString())}
+                          >
+                            <MoreVertTwoTone />
+                          </IconButton>
+                          <Menu
+                            id={`menu-${row.id}`}
+                            anchorEl={anchorEl}
+                            open={selectedId ? parseInt(selectedId) === row.id : false}
+                            onClose={handleClose}
+                          >
+                            <MenuItem onClick={() => navigate(`/admin/event/edit/${row.id}`)}>Edit</MenuItem>
+                            <MenuItem onClick={() => handleDeleteClick(row)}>Delete</MenuItem>
+                          </Menu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                     </TableBody>
                   </Table>
               </TableContainer>
@@ -329,7 +326,27 @@ const EventPage:React.FC<{
                 display: "flex",
                 justifyContent: "center"
               }}>
-                <Pagination count={10} shape="rounded" />
+                <button style={styles.paginateStyle} onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+                  <KeyboardDoubleArrowLeftIcon/>
+                </button>
+                {pageNums.map((pageNum: number, idx: React.Key | null | undefined) => (
+                  pageNum <= totalPages ? (
+                    <button
+                      onClick={() => setCurrentPage(pageNum)} 
+                      key={idx} 
+                      disabled={isNaN(pageNum)}
+                      style={{
+                        ...styles.paginateStyle,
+                        backgroundColor: currentPage === pageNum ? '#7baee6ba' : ''
+                      }}
+                    >
+                      {pageNum}
+                    </button>
+                  ) : null
+                ))}
+                <button style={styles.paginateStyle} onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
+                  <KeyboardDoubleArrowRightIcon/>
+                </button>
               </Box>
             </Box>
         </Box>

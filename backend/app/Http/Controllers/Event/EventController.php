@@ -72,8 +72,6 @@ class EventController extends Controller
 
     public function deleteEventById($id)
     {
-        info('delete');
-        info($id);
         $event = $this->eventInterface->deleteEvent($id);
         return response()->json(['message' => 'Event is successfully deleted!', 'event' => $event]);
     }
@@ -85,7 +83,6 @@ class EventController extends Controller
      */
     public function createEvent(EventRequest $request)
     {
-        info($request);
         if ($request->hasFile('image')) {
             $imageName = time() . '.' . $request->file('image')->extension();
             $request->file('image')->move(storage_path('app/public/events'), $imageName);
@@ -98,7 +95,7 @@ class EventController extends Controller
             'from_time' => $request->from_time,
             'to_time' => $request->to_time,
             'status' => $request->status,
-            'image' => $request->image,
+            'image' => trim('storage/events/'.$imageName),
             'address' => $request->address,
             'approved_by_user_id' => $request->approved_by_user_id ?? 1,
         ]);
@@ -113,9 +110,6 @@ class EventController extends Controller
      */
     public function updateEvent(EventRequest $request, int $id)
     {
-        info('update');
-        info($request);
-        info('id'.$id);
         $param = [
             'event_name' => $request->event_name,
             'description' => $request->description,
@@ -129,9 +123,7 @@ class EventController extends Controller
         ];
         if ($request->file('image')) {
           $event = Event::where('id',$id)->first();
-          info($event->image);
           if (File::exists(storage_path('app/public/events/') . $event->image)) {
-              info('delete image enter');
               File::delete(storage_path('app/public/events/') . $event->image);
           }
           $imageName = time() . '.' . $request->file('image')->extension();

@@ -160,6 +160,16 @@ const EventPage:React.FC<{
       approved_by_user_id: preEventList[index].approved_by_user_id,
     }
 
+    const apiFormData = new FormData();
+      apiFormData.append("event_name", preEventList[index].event_name);
+      apiFormData.append("description", preEventList[index].description);
+      apiFormData.append("from_date", preEventList[index].from_date);
+      apiFormData.append("to_date", preEventList[index].to_date);
+      apiFormData.append("from_time", preEventList[index].from_time);
+      apiFormData.append("to_time", preEventList[index].to_time);
+      apiFormData.append("address", preEventList[index].address);
+      apiFormData.append("image", "http://localhost:8000/" + preEventList[index].image);
+
     axios.post('http://localhost:8000/api/event/update/' + id, param).then((response) => {
       if(response.status === 200) {
         const temp: any = {
@@ -168,11 +178,22 @@ const EventPage:React.FC<{
         setEventState({
           ...temp
         })
+
+        axios.post('http://localhost:6034/api/skype-message', apiFormData).then((response) => {
+          if(response.status === 200) {
+            const temp: any = {
+              data: preEventList
+            };
+            setEventState({
+              ...temp
+            })
+          }
+        })
       }
     })
     if(status == 'approved'){
       // To send message to Line 
-      sentLineMessage(event_list_data);
+      // sentLineMessage(event_list_data);
     }
   };
 

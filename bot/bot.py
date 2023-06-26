@@ -2,10 +2,14 @@
 # encoding: utf-8
 import json
 from flask import Flask, jsonify, request
+from flask_cors import CORS
+import requests
+from PIL import Image
 from skpy import Skype
 
 app = Flask(__name__)
 
+CORS(app)
 
 @app.route('/')
 def index():
@@ -14,7 +18,7 @@ def index():
 
 @app.route('/api/skype-message', methods=['POST'])
 def send_skype_message():
-    slogin = Skype("username", "password")
+    slogin = Skype("", "")
 
     # Define the table data
     table_data = [
@@ -37,10 +41,6 @@ def send_skype_message():
         {
             "label": "Address",
             "value": request.form["address"]
-        },
-        {
-            "label": "Phone Number",
-            "value": request.form["phone"]
         }
     ]
 
@@ -53,8 +53,10 @@ def send_skype_message():
 
     print(table_str)
 
+    im = Image.open(requests.get(request.form["image"], stream=True).raw)
+
     channel = slogin.chats["19:a77d5a5724ce461bb9ca0180bdac1dcf@thread.skype"]
-    channel.sendFile(request.files["image"], "event.jpg", image=True)
+    channel.sendFile(im, "event.jpg", image=True)
     channel.sendMsg(table_str)
 
     # to send message to spcific user.
@@ -65,4 +67,4 @@ def send_skype_message():
                     'email': 'alice@outlook.com'})
 
 
-app.run(debug=True, port=6000)
+app.run(debug=True, port=6034)

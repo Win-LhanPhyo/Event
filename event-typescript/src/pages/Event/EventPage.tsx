@@ -12,7 +12,7 @@ import { eventState } from '../../redux/store/Event/event';
 import { useState, MouseEvent } from "react";
 import { Event } from '../../redux/domain/eventList';
 import Box from '@mui/material/Box';
-import { Button, ThemeProvider } from "@mui/material";
+import { Button, Radio, ThemeProvider } from "@mui/material";
 import { eventTheme } from '../../entries/theme';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
@@ -26,6 +26,8 @@ import ImportButton from "./ImportButton";
 import ExportButton from '../ExportButton';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import AddIcon from '@mui/icons-material/Add';
+import PushPinIcon from '@mui/icons-material/PushPin';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
@@ -62,6 +64,29 @@ const EventPage:React.FC<{
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentData = data.slice(startIndex, endIndex);
+
+  // select options
+  const [selectedOption, setSelectedOption] = useState('');
+  const [showColumn, setShowColumn] = useState(false);
+  const [showIcon, setShowIcon] = useState(false);
+
+  const [user, setUser] = useState({
+    id: '',
+  });
+
+  React.useEffect(() => {
+    const loginUser = localStorage.getItem('user');
+    if(loginUser) {
+      setUser(JSON.parse(loginUser));
+    }
+  }, []);
+  
+  /**
+   * if choose option change row selected
+   */
+  const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedOption(event.target.value);
+  };
   
   /**
    * icon button click show edit modal small box
@@ -147,14 +172,13 @@ const EventPage:React.FC<{
     })
     if(status == 'approved'){
       // To send message to Line 
-      // sentLineMessage(event_list_data);
-      console.log(status)
-      // To Send Message to Skype
-      const message = 'Your request has been approved!';
-      sendMessageToSkype(message);
+      sentLineMessage(event_list_data);
     }
   };
 
+  /**
+   *  send message to line message
+   */
   const sentLineMessage = (event_list_data: { id: string | Blob; address: string | Blob; approved_by_user_id: string | Blob; description: string | Blob; event_name: string | Blob; from_date: string | Blob; from_time: string | Blob; image: string | Blob; phone: string | Blob; }) =>{
     let formData = new FormData();
     formData.append('id', event_list_data.id);
@@ -172,15 +196,13 @@ const EventPage:React.FC<{
     });
   };
 
-  // Function to send a message
-  const sendMessageToSkype = (message: string) => {
-    // Initialize the Skype SDK
+  const selectDefaultMenu = () => {
+    setShowColumn(true);
+  };
 
-    axios.post('http://localhost:8000/api/skype/message', {message}).then(() => {
-      console.log('Skype message send successfully');
-    }).catch((error) => {
-      console.log(`error message ${error}`);
-    });
+  const chooseDefaultMenu = () => {
+    setShowColumn(false);
+    setShowIcon(true);
   };
 
   const styles = {
@@ -222,19 +244,38 @@ const EventPage:React.FC<{
           }}>
             <Box sx={{ px: 5, py: 5 }}>
               <Box sx={{pb: 3, textAlign: 'end', display: 'flex', justifyContent: 'space-between'}}>
-                
                 <div>
                   <ImportButton />
                 </div>
                 <div>
+                  { !showColumn &&  
+                    <Button 
+                      sx={{color: 'white', border: '2px solid #52ea52', background: '#35c4358c', marginRight: '20px'}} 
+                      onClick={selectDefaultMenu}>
+                      <PushPinIcon/>
+                        Select Defalut Menu
+                    </Button>
+                  }
+                  { showColumn &&  
+                    <Button 
+                      sx={{color: 'white', border: '2px solid #52ea52', background: '#35c4358c', marginRight: '20px'}} 
+                      onClick={chooseDefaultMenu}>
+                      <PushPinIcon/>
+                        Choose Default Menu
+                    </Button>
+                  }
                   <ExportButton data={data} filename="eventLists_data"/>
-                  <Button sx={{color: 'white', border: '2px solid #52ea52', background: '#35c4358c'}} onClick={() => navigate('/admin/event/create')}>Create</Button>
+                  <Button sx={{color: 'white', border: '2px solid #52ea52', background: '#35c4358c'}} onClick={() => navigate('/admin/event/create')}>
+                    <AddIcon/>
+                    Create
+                  </Button>
                 </div>
               </Box>
               <TableContainer component={Paper}>
                   <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                       <StyledTableRow sx={{backgroundColor: '#80bfff'}}>
+                        { showColumn &&  <TableCell>Select</TableCell>}
                         <TableCell>ID</TableCell>
                         <TableCell align="center" color='#e6f2ff'>Image</TableCell>
                         <TableCell align="center" color='#e6f2ff'>Event Name</TableCell>
@@ -247,8 +288,23 @@ const EventPage:React.FC<{
                     <TableBody>
                     {currentData.map((row: any) => (
                       <TableRow key={row.id}>
+                        { 
+                          showColumn && 
+                          <TableCell component="th" scope="row">
+                            <Radio
+                              checked={selectedOption === row.id.toString()}
+                              onChange={handleOptionChange}
+                              value={row.id}
+                              name="radio-buttons"
+                              inputProps={{ 'aria-label': 'A' }}
+                            />
+                          </TableCell>
+                        }
                         <TableCell component="th" scope="row">
                           {row.id}
+                          { selectedOption === row.id.toString() && 
+                            showIcon &&
+                            <PushPinIcon/>}
                         </TableCell>
                         <TableCell align="center" component="th" scope="row">
                           <img
@@ -268,7 +324,14 @@ const EventPage:React.FC<{
                           />
                         </TableCell>
                         <TableCell align="center">
-                          <Link to={`/admin/event/edit/${row.id}`} style={{ color: '#393939'}}>{row.event_name}</Link>
+                        <Link
+                          style={{
+                            cursor: user.id.toString() !== row.approved_by_user_id ? 'no-drop' : 'pointer',
+                          }}
+                          to={user.id.toString() !== row.approved_by_user_id ? '' : `/admin/event/edit/${row.id}`}
+                        >
+                          {row.event_name}
+                        </Link>
                         </TableCell>
                         <TableCell align="center">{row.description}</TableCell>
                         <TableCell align="center">
@@ -276,17 +339,18 @@ const EventPage:React.FC<{
                         </TableCell>
                         <TableCell align="center">
                           {(row.status === 'new' || row.status === 'rejected') &&
-                            <IconButton 
+                            <IconButton
+                              disabled={user.id.toString() !== row.approved_by_user_id}
                               sx={{ color: '#0072ff'}}
                               onClick={() =>
                                 changeStatus(row.id, 'approved')}
                             >
                               <ThumbUpIcon/> 
-                            </IconButton> ||
-                            <a href='skype:live:.cid.1ed9002627da4bb3?chat'>Chat</a>
+                            </IconButton>
                           }
                           {(row.status === 'new' || row.status === 'approved') &&
                             <IconButton
+                              disabled={user.id.toString() !== row.approved_by_user_id}
                               sx={{ color: '#d22727'}}
                               onClick={() =>
                               changeStatus(row.id, 'rejected')}
@@ -301,20 +365,22 @@ const EventPage:React.FC<{
                           
                         </TableCell>
                         <TableCell align="right" key={row.id}> 
-                          <IconButton
-                            aria-controls={`menu-${row.id}`}
-                            aria-handleSubmit="true"
-                            onClick={(event) => handleClick(event, row?.id.toString())}
-                          >
-                            <MoreVertTwoTone />
-                          </IconButton>
+                          {user.id.toString() === row.approved_by_user_id && (
+                            <IconButton
+                              aria-controls={`menu-${row.id}`}
+                              aria-handleSubmit="true"
+                              onClick={(event) => handleClick(event, row?.id.toString())}
+                            >
+                              <MoreVertTwoTone />
+                            </IconButton>
+                          )}
                           <Menu
                             id={`menu-${row.id}`}
                             anchorEl={anchorEl}
                             open={selectedId ? parseInt(selectedId) === row.id : false}
                             onClose={handleClose}
                           >
-                            <MenuItem onClick={() => navigate(`/admin/event/edit/${row.id}`)}>Edit</MenuItem>
+                            <MenuItem  onClick={() => navigate(`/admin/event/edit/${row.id}`)}>Edit</MenuItem>
                             <MenuItem onClick={() => handleDeleteClick(row)}>Delete</MenuItem>
                           </Menu>
                         </TableCell>

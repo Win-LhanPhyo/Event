@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 function HeaderPage() {
   const [user, setUser] = useState({
     name: '',
+    role: '',
   });
 
   const navigate = useNavigate();
@@ -15,9 +16,9 @@ function HeaderPage() {
   };
 
   React.useEffect(() => {
-    const loginName = localStorage.getItem('user');
-    if (loginName) {
-      setUser(JSON.parse(loginName));
+    const loginUser = localStorage.getItem('user');   
+    if (loginUser) {
+      setUser(JSON.parse(loginUser));
     }
   }, []);
 
@@ -79,7 +80,10 @@ function HeaderPage() {
           user.name && 
           <div style={floatRight}>
             <span>{user.name}</span>
-            <a onClick={() => navigate("/admin/users")} style={styles.logoutStyle}>Users</a>
+            {
+              user.role.toString() === '1' && 
+              <a onClick={() => navigate("/admin/users")} style={styles.logoutStyle}>Users</a>
+            }
             <a onClick={() => navigate("/admin/events")} style={styles.logoutStyle}>Events</a> 
             <a style={styles.logoutStyle} onClick={handleLogout}>Logout</a>
           </div>

@@ -123,9 +123,7 @@ const EventCreatePage: React.FC = () => {
       if(selectedFile) {
         apiFormData.append("image", selectedFile);
       }
-     
 
-      apiFormData.append("address", data.address);
       apiFormData.append("approved_by_user_id", data.id);
 
       axios.post('http://localhost:8000/api/event/create', apiFormData).then((response) => {

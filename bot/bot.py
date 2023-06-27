@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import json
+import io
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import requests
-from PIL import Image
 from skpy import Skype
 
 app = Flask(__name__)
@@ -51,12 +51,11 @@ def send_skype_message():
             if key == "value" and table_data[-1][key] != dic[key]:
                 table_str += "\n"
 
-    print(table_str)
-
-    im = Image.open(requests.get(request.form["image"], stream=True).raw)
+    image_content = requests.get(request.form["image"]).content
+    image_file = io.BytesIO(image_content)
 
     channel = slogin.chats["19:a77d5a5724ce461bb9ca0180bdac1dcf@thread.skype"]
-    channel.sendFile(im, "event.jpg", image=True)
+    channel.sendFile(image_file, "event.jpg", image=True)
     channel.sendMsg(table_str)
 
     # to send message to spcific user.

@@ -219,7 +219,7 @@ const EventPage:React.FC<{
     })
     if(status == 'approved'){
       // To send message to Line 
-      // sentLineMessage(event_list_data);
+      sentLineMessage(event_list_data);
     }
   };
 

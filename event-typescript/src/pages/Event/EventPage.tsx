@@ -41,6 +41,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   }
 }));
 
+interface Item {
+  id: number;
+  name: string;
+}
 const EventPage:React.FC<{
   children?: React.ReactNode;
 }> = () => {
@@ -55,15 +59,44 @@ const EventPage:React.FC<{
 
   const data = events.data;
 
-  const pageNums = [1, 2, 3, 4, 5];
-
+  /* ============= pagination ======================== */
+  const [isData, setData] = useState<Item[]>([]);
+  const [pageNumber, setPageNumber] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
-  const totalPages = Math.ceil(data.length / itemsPerPage) + 1;
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentData = data.slice(startIndex, endIndex);
+  React.useEffect(() => {
+    fetchData(currentPage);
+    const loginUser = localStorage.getItem('user');
+    if(loginUser) {
+      setUser(JSON.parse(loginUser));
+    }
+  }, []);
+
+  /* 
+  * To get Data with page changes
+  */
+  const fetchData = async (page: number) => {
+    const response = await fetch(`http://localhost:8000/api/event/list?page=${page}`);
+    const responseData = await response.json();
+    const pageCount = Math.ceil(responseData.total / 15);
+    setPageNumber(pageCount);
+    setCurrentPage(responseData.current_page);
+    setData(responseData.data);
+  }
+
+  /* 
+  * when previous button click
+  */
+  const handlePreviousPage = () => {
+    fetchData(currentPage - 1);
+  };
+
+  /* 
+  * when next button click
+  */
+  const handleNextPage = () => {
+    fetchData(currentPage + 1);
+  };
 
   // select options
   const [selectedOption, setSelectedOption] = useState('');
@@ -73,13 +106,6 @@ const EventPage:React.FC<{
   const [user, setUser] = useState({
     id: '',
   });
-
-  React.useEffect(() => {
-    const loginUser = localStorage.getItem('user');
-    if(loginUser) {
-      setUser(JSON.parse(loginUser));
-    }
-  }, []);
   
   /**
    * if choose option change row selected
@@ -250,6 +276,7 @@ const EventPage:React.FC<{
       width: '50px',
     },
     paginateStyle: {
+      cursor: 'pointer',
       padding: '4px 10px 0 10px',
       border: '1px solid #bdbdbe',
     }
@@ -307,7 +334,7 @@ const EventPage:React.FC<{
                       </StyledTableRow>
                     </TableHead>
                     <TableBody>
-                    {currentData.map((row: any) => (
+                    {isData.map((row: any) => (
                       <TableRow key={row.id}>
                         { 
                           showColumn && 
@@ -379,11 +406,6 @@ const EventPage:React.FC<{
                               <ThumbDownIcon/>
                             </IconButton> 
                           }
-                          {/* {
-                            (chat == true && row.status === 'approved') &&
-                            <a href='skype:live:.cid.1ed9002627da4bb3?chat'>Chat</a>
-                          } */}
-                          
                         </TableCell>
                         <TableCell align="right" key={row.id}> 
                           {user.id.toString() === row.approved_by_user_id && (
@@ -415,25 +437,22 @@ const EventPage:React.FC<{
                 display: "flex",
                 justifyContent: "center"
               }}>
-                <button style={styles.paginateStyle} onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+                <button style={styles.paginateStyle} onClick={handlePreviousPage} disabled={currentPage === 1}>
                   <KeyboardDoubleArrowLeftIcon/>
                 </button>
-                {pageNums.map((pageNum: number, idx: React.Key | null | undefined) => (
-                  pageNum <= totalPages ? (
-                    <button
-                      onClick={() => setCurrentPage(pageNum)} 
-                      key={idx} 
-                      disabled={isNaN(pageNum)}
-                      style={{
-                        ...styles.paginateStyle,
-                        backgroundColor: currentPage === pageNum ? '#7baee6ba' : ''
-                      }}
-                    >
-                      {pageNum}
-                    </button>
-                  ) : null
+                { Array.from({ length: pageNumber }, (_, index) => (
+                  <button
+                    key={index + 1}
+                    onClick={() => fetchData(index + 1)}
+                    style={{
+                      ...styles.paginateStyle,
+                      backgroundColor: currentPage === index + 1 ? '#7baee6ba' : ''
+                    }}
+                  >
+                    {index + 1}
+                  </button>
                 ))}
-                <button style={styles.paginateStyle} onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
+                <button style={styles.paginateStyle} onClick={handleNextPage}  disabled={currentPage === pageNumber}>
                   <KeyboardDoubleArrowRightIcon/>
                 </button>
               </Box>

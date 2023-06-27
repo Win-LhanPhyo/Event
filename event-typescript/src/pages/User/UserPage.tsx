@@ -40,6 +40,11 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
+interface Item {
+  id: number;
+  name: string;
+}
+
 /* End Modal Box */
 
 const UserPage: React.FC<{
@@ -50,15 +55,6 @@ const UserPage: React.FC<{
   const [ selectedId, setSelectedId] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const pageNums = [1, 2, 3, 4, 5];
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
-  const totalPages = Math.ceil(users.data.length / itemsPerPage);
-
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentData = users.data.slice(startIndex, endIndex);
   /**
    * icon button click show edit modal small box
    * @param event
@@ -109,6 +105,42 @@ const UserPage: React.FC<{
         window.location.reload();
       })
     }
+  };
+
+  /* ============= pagination ======================== */
+  const [isData, setData] = useState<Item[]>([]);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  React.useEffect(() => {
+    fetchData(currentPage);
+  }, []);
+
+  /* 
+  * To get Data with page changes
+  */
+  const fetchData = async (page: number) => {
+    const response = await fetch(`http://localhost:8000/api/user/list?page=${page}`);
+    const responseData = await response.json();
+    console.log(responseData);
+    const pageCount = Math.ceil(responseData.total / 15);
+    setPageNumber(pageCount);
+    setCurrentPage(responseData.current_page);
+    setData(responseData.data);
+  }
+
+  /* 
+  * when previous button click
+  */
+  const handlePreviousPage = () => {
+    fetchData(currentPage - 1);
+  };
+
+  /* 
+  * when next button click
+  */
+  const handleNextPage = () => {
+    fetchData(currentPage + 1);
   };
 
   // To Export the data of user
@@ -177,7 +209,7 @@ const UserPage: React.FC<{
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                {currentData.map((row: User) => (
+                {isData.map((row: any) => (
                   <TableRow
                     key={row.id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -239,35 +271,30 @@ const UserPage: React.FC<{
               </TableBody>
             </Table>
           </TableContainer>
-          <Box
-            sx={{
-              pt: 3,
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
-            <button style={styles.paginateStyle} onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+          <Box sx={{ 
+            pt: 3,
+            display: "flex",
+            justifyContent: "center"
+          }}>
+            <button style={styles.paginateStyle} onClick={handlePreviousPage} disabled={currentPage === 1}>
               <KeyboardDoubleArrowLeftIcon/>
             </button>
-            {pageNums.map((pageNum: number, idx: React.Key | null | undefined) => (
-              pageNum <= totalPages ? (
-                <button
-                  onClick={() => setCurrentPage(pageNum)} 
-                  key={idx} 
-                  disabled={isNaN(pageNum)}
-                  style={{
-                    ...styles.paginateStyle,
-                    backgroundColor: currentPage === pageNum ? '#7baee6ba' : ''
-                  }}
-                >
-                  {pageNum}
-                </button>
-              ) : null
+            { Array.from({ length: pageNumber }, (_, index) => (
+              <button
+                key={index + 1}
+                onClick={() => fetchData(index + 1)}
+                style={{
+                  ...styles.paginateStyle,
+                  backgroundColor: currentPage === index + 1 ? '#7baee6ba' : ''
+                }}
+              >
+                {index + 1}
+              </button>
             ))}
-            <button style={styles.paginateStyle} onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
+            <button style={styles.paginateStyle} onClick={handleNextPage}  disabled={currentPage === pageNumber}>
               <KeyboardDoubleArrowRightIcon/>
             </button>
-          </Box>
+              </Box>
         </Box>
       </Box>
       <DeleteModalBox

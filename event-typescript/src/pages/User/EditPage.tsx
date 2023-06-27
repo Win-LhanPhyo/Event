@@ -91,6 +91,11 @@ const EditPage: React.FC = () => {
         setPreviewImage(reader.result);
       };
       reader.readAsDataURL(file);
+      const { name,value } = event.target;
+      setFormData((prevFormData: any) => ({
+        ...prevFormData,
+        [name]: value
+      }));
     } else {
       setSelectedFile(null);
       setPreviewImage(null);
@@ -110,7 +115,6 @@ const EditPage: React.FC = () => {
  */
   const inputChangeForUser = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    const file = event.target;
     setFormData((prevFormData: any) => ({
       ...prevFormData,
       [name]: value
@@ -125,7 +129,19 @@ const EditPage: React.FC = () => {
     e.preventDefault();
     const isFormValid = validateForm();
     if(isFormValid && formData) {
-      axios.post(`http://localhost:8000/api/user/update/${id}`, formData).then((response) => {
+      const apiFormData = new FormData();
+      apiFormData.append("name", formData.name);
+      
+      apiFormData.append("role", formData.role);
+      apiFormData.append("email", formData.email);
+      apiFormData.append("address", formData.address);
+      apiFormData.append("dob", formData.dob);
+      if (selectedFile) {
+        apiFormData.append("profile", selectedFile);
+      }
+      apiFormData.append("phone", formData.phone);
+      
+      axios.post(`http://localhost:8000/api/user/update/${id}`, apiFormData).then((response) => {
         if (response.status === 200) {
           window.location.href = '/admin/users';
         }

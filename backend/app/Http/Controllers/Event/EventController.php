@@ -130,7 +130,7 @@ class EventController extends Controller
           // Storage Folder
           $request->image->move(storage_path('app/public/events/'), $imageName);
 
-          $param['image_name'] = $imageName;
+          $param['image'] = trim('storage/events/'.$imageName);
         }
         $event = Event::where('id', $id)->update($param);
         return response()->json(['message' => 'Event is successfully updated!', 'event' => $event]);

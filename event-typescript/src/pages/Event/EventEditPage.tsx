@@ -40,6 +40,8 @@ const EventCreatePage: React.FC = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [previewImage, setPreviewImage] = useState<string | ArrayBuffer | null>(null);
   const [selectedFile, setSelectedFile] = useState<any>(null);
+  const [ status, setStatus] = useState('new');
+  const [ approveUser, setApproveUser] = useState('1');
 
   const {id} = useParams();
 
@@ -48,8 +50,9 @@ const EventCreatePage: React.FC = () => {
    */
    React.useEffect(() => {
     axios.get(`http://localhost:8000/api/event/detail/${id}`).then((response) => {
-      console.log(response);
       if (response.status === 200) {
+        setStatus(response.data.status);
+        setApproveUser(response.data.approved_by_user_id);
         setFormData({...response.data});
       }
     })
@@ -91,13 +94,14 @@ const EventCreatePage: React.FC = () => {
       };
       reader.readAsDataURL(file);
       setSelectedFile(file);
-      const { name,value } = event.target;
-      setFormData({...formData, [name]:value });
+      const { name, value } = event.target;
+      setFormData((prevFormData: any) => ({
+        ...prevFormData,
+        [name]: value
+      }));
     } else {
       setSelectedFile(null);
       setPreviewImage(null);
-      const { name,value } = event.target;
-      setFormData({...formData, [name]:value });
     }
   }
 
@@ -111,8 +115,6 @@ const EventCreatePage: React.FC = () => {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    const file = event.target;
-    setSelectedFile(file);
     setFormData((prevFormData: any) => ({
       ...prevFormData,
       [name]: value
@@ -134,13 +136,13 @@ const EventCreatePage: React.FC = () => {
       apiFormData.append("to_date", formData.to_date);
       apiFormData.append("from_time", formData.from_time);
       apiFormData.append("to_time", formData.to_time);
-      apiFormData.append("status", "new");
       apiFormData.append("address", formData.address);
+      apiFormData.append("status", status.toString());
+      apiFormData.append("approved_by_user_id", approveUser.toString());
       if(selectedFile) {
         apiFormData.append("image", selectedFile);
       }
       apiFormData.append("address", "Yangon");
-      apiFormData.append("approved_by_user_id", '1');
       axios.post(`http://localhost:8000/api/event/update/${id}`, apiFormData).then((response) => {
         if (response.status === 200) {
           window.location.href = '/admin/events';
@@ -308,14 +310,32 @@ const EventCreatePage: React.FC = () => {
           />
           {errors.address && <span style={styles.errorMessage}>{errors.address}</span>}
           <div>
-            {/* { 
+            { 
               previewImage && 
               <img 
                 src={previewImage.toString()} 
                 style={styles.previewImage} 
                 alt="image"
               />
-            } */}
+            }
+            {
+              !previewImage && 
+              <img
+                src={
+                  "http://localhost:8000/" +
+                  formData.image +
+                  "?auto=format&fit=crop&w=800"
+                }
+                srcSet={
+                  "http://localhost:8000/" +
+                  formData.image +
+                  "?auto=format&fit=crop&w=800&dpr=2 2x"
+                }
+                alt={formData.event_name}
+                loading="lazy"
+                style={styles.previewImage}
+              />
+            }
             <TextField
               label="Select the image"
               type="file"
